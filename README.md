@@ -20,13 +20,13 @@ groups and events for ball games.
 
 ## Team members
 
-* [Amit Cohen] (https://github.com/amitCohen2)
-* [Maayan Mashhadi] (https://github.com/MaayanMashhadi)
-* [Zvi Naor Cohen] (https://github.com/ZvikaNaorCohen)
-* [Daniel Sionov] (https://github.com/Danielsio)
-* [Ohad Segal] (https://github.com/OhadSeg)
-* [Amit Kaplansky] (https://github.com/amitKaplansky)
-* [Idan Zimilis] (https://github.com/IdanZimi)
+* [Amit Cohen](https://github.com/amitCohen2)
+* [Maayan Mashhadi](https://github.com/MaayanMashhadi)
+* [Zvi Naor Cohen](https://github.com/ZvikaNaorCohen)
+* [Daniel Sionov](https://github.com/Danielsio)
+* [Ohad Segal](https://github.com/OhadSeg)
+* [Amit Kaplansky](https://github.com/amitKaplansky)
+* [Idan Zimilis](https://github.com/IdanZimi)
 
 ## Contribute
 
