@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'meet_balls_app.apps.MeetBallsAppConfig'
 ]
 
 MIDDLEWARE = [
