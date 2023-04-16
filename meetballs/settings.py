@@ -38,11 +38,12 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'meet_balls_app.apps.MeetBallsAppConfig',
-    'player_rating.apps.PlayerRatingConfig',
     'court.apps.CourtConfig',
     'player.apps.PlayerConfig',
     'game_event.apps.GameEventConfig',
     'message.apps.MessageConfig',
+    'player_rating.apps.PlayerRatingConfig',
+    'game_event_player.apps.GameEventPlayerConfig',
 ]
 
 MIDDLEWARE = [
