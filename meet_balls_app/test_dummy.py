@@ -3,4 +3,4 @@
 # Create your tests here.
 
 def test_dummy():
-    assert 1 + 2 == 3
+    assert 1 + 1 == 2
