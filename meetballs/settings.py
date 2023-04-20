@@ -40,7 +40,8 @@ INSTALLED_APPS = [
     'meet_balls_app.apps.MeetBallsAppConfig',
     'player_rating.apps.PlayerRatingConfig',
     'court.apps.CourtConfig',
-    'player.apps.PlayerConfig'
+    'player.apps.PlayerConfig',
+    'game_event.apps.GameEventConfig',
 ]
 
 MIDDLEWARE = [
