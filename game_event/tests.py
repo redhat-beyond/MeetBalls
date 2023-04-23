@@ -2,11 +2,11 @@ from .models import GameEvent, BallGame
 from django.core.exceptions import ValidationError
 from court.models import Court
 from decimal import Decimal
-from datetime import datetime
+from django.utils import timezone
 import pytest
 
 TEST_ID = 2
-TEST_TIME = datetime.today()
+TEST_TIME = timezone.now()
 TEST_LEVEL = 3
 TEST_MIN = 2
 TEST_MAX = 5
