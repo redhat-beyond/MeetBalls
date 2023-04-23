@@ -2,18 +2,7 @@ from django.db import models
 from django.core.validators import MinLengthValidator
 from court.models import Court
 from player_rating.models import Rating
-
-
-class BallGame(models.TextChoices):
-    Soccer = 'Soccer', 'Soccer'
-    Basketball = 'Basketball', 'Basketball'
-    Volleyball = 'Volleyball', 'Volleyball'
-    Baseball = 'Baseball', 'Baseball'
-    Tennis = 'Tennis', 'Tennis'
-    Rugby = 'Rugby', 'Rugby'
-    Golf = 'Golf', 'Golf'
-    Cricket = 'Cricket', 'Cricket'
-    Handball = 'Handball', 'Handball'
+from player.models import BallGame
 
 
 class GameEvent(models.Model):
