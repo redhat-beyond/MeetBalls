@@ -1,4 +1,3 @@
-from django.contrib.auth import get_user_model
 from .models import Player, BallGame
 from django.core.exceptions import ValidationError
 import pytest
@@ -7,45 +6,29 @@ import pytest
 @pytest.mark.django_db
 class TestPlayerModel:
 
-    @pytest.fixture
-    def user(self):
-        return get_user_model().objects.create_user(
-            username='testuser',
-            password='testpass'
-        )
+    def test_get_player(self, player):
+        player_from_db = Player.objects.get(pk=player.pk)
+        assert player_from_db == player
 
-    @pytest.fixture
-    def saved_player(self, user):
-        player = Player.objects.create(
-            user=user,
-            birth_date='1990-01-01',
-            favorite_ball_game=BallGame.Soccer
-        )
-        return player
-
-    def test_get_player(self, saved_player):
-        player = Player.objects.get(pk=saved_player.pk)
-        assert player == saved_player
-
-    def test_update_player(self, saved_player):
-        player = saved_player
-        assert player.favorite_ball_game != BallGame.Basketball
-        player.favorite_ball_game = BallGame.Basketball
-        player.save()
-        updated_player = Player.objects.get(pk=player.pk)
+    def test_update_player(self, player):
+        player_copy = player
+        assert player_copy.favorite_ball_game != BallGame.Basketball
+        player_copy.favorite_ball_game = BallGame.Basketball
+        player_copy.save()
+        updated_player = Player.objects.get(pk=player_copy.pk)
         assert updated_player.favorite_ball_game == BallGame.Basketball
 
-    def test_delete_player(self, saved_player):
-        player = saved_player
-        player.delete()
+    def test_delete_player(self, player):
+        player_copy = player
+        player_copy.delete()
         with pytest.raises(Player.DoesNotExist):
-            Player.objects.get(pk=saved_player.pk)
+            Player.objects.get(pk=player.pk)
 
-    def test_delete_user_deletes_player(self, saved_player):
-        user = saved_player.user
+    def test_delete_user_deletes_player(self, player):
+        user = player.user
         user.delete()
         with pytest.raises(Player.DoesNotExist):
-            Player.objects.get(pk=saved_player.pk)
+            Player.objects.get(pk=player.pk)
 
     def test_create_player_with_valid_fields(self, user):
         Player.objects.create(
