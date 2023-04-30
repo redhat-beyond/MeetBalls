@@ -83,7 +83,7 @@ def saved_court():
 @pytest.fixture
 def saved_game_event(saved_court):
     game_event = GameEvent.objects.create(id=ID1, time=datetime.today(), level_of_game=3,
-                                          min_number_of_players=2, max_number_of_players=5, court_id=saved_court,
+                                          min_number_of_players=2, max_number_of_players=5, court=saved_court,
                                           ball_game='Basketball')
     return game_event
 
@@ -91,7 +91,7 @@ def saved_game_event(saved_court):
 @pytest.fixture
 def saved_game_event2(saved_court):
     game_event = GameEvent.objects.create(id=ID2, time=datetime.today(), level_of_game=3,
-                                          min_number_of_players=2, max_number_of_players=5, court_id=saved_court,
+                                          min_number_of_players=2, max_number_of_players=5, court=saved_court,
                                           ball_game='Basketball')
     return game_event
 
