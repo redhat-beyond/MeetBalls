@@ -1,8 +1,9 @@
-from .models import GameEvent, BallGame
+from .models import GameEvent
 from django.core.exceptions import ValidationError
 from court.models import Court
 from decimal import Decimal
 from django.utils import timezone
+from player.models import BallGame
 import pytest
 
 TEST_ID = 2
