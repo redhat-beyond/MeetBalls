@@ -21,7 +21,7 @@ class PlayerRating(models.Model):
     ball_game = models.CharField(
         max_length=100,
         choices=BallGame.choices)
-    user_id = models.ForeignKey(
+    player = models.ForeignKey(
         Player,
         on_delete=models.CASCADE)
     rating = models.IntegerField(choices=Rating.choices)
@@ -29,8 +29,8 @@ class PlayerRating(models.Model):
     class Meta:
         constraints = [
             models.UniqueConstraint(
-                fields=['ball_game', 'user_id'],
+                fields=['ball_game', 'player'],
                 name='unique_player_rating'
             )
         ]
-        unique_together = ('ball_game', 'user_id')
+        unique_together = ('ball_game', 'player')
