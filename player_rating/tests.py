@@ -2,7 +2,6 @@ from .models import PlayerRating, Rating
 from player.models import BallGame, Player
 from django.core.exceptions import ValidationError
 from django.db import IntegrityError
-from django.contrib.auth import get_user_model
 import pytest
 
 
@@ -10,28 +9,11 @@ import pytest
 class TestPlayerModel:
 
     @pytest.fixture
-    def user(self):
-        return get_user_model().objects.create_user(
-            username='testuser',
-            password='testpass'
-        )
-
-    @pytest.fixture
-    def player(self, user):
-        player = Player.objects.create(
-            user=user,
-            birth_date='1990-01-01',
-            favorite_ball_game=BallGame.Soccer
-        )
-        return player
-
-    @pytest.fixture
     def player_rating(self, player):
         player_rating_fixture = PlayerRating.objects.create(
             ball_game=BallGame.Soccer,
             user_id=player,
-            rating=Rating.Five
-        )
+            rating=Rating.Five)
         return player_rating_fixture
 
     def test_get_player_rating(self, player_rating):
