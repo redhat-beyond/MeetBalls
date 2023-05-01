@@ -23,3 +23,12 @@ class Player(models.Model):
     favorite_ball_game = models.CharField(
         max_length=100,
         choices=BallGame.choices)
+
+    @staticmethod
+    def create(username, password, birth_date, favorite_ball_game):
+        player = Player(user=User.objects.create_user(
+                    username=username,
+                    password=password), birth_date=birth_date, favorite_ball_game=favorite_ball_game)
+        player.user.save()
+        player.save()
+        return player
