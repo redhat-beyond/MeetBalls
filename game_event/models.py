@@ -11,7 +11,7 @@ class GameEvent(models.Model):
     level_of_game = models.IntegerField(choices=Rating.choices, blank=True)
     min_number_of_players = models.PositiveIntegerField()
     max_number_of_players = models.PositiveIntegerField()
-    court_id = models.ForeignKey(Court, on_delete=models.CASCADE)
+    court = models.ForeignKey(Court, on_delete=models.CASCADE)
     ball_game = models.CharField(
         max_length=100,
         validators=[MinLengthValidator(4)],

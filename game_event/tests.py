@@ -27,7 +27,7 @@ class TestGameEventModel:
     def saved_game_event(self, saved_court):
         return GameEvent.objects.create(id=TEST_ID, time=TEST_TIME, level_of_game=TEST_LEVEL,
                                         min_number_of_players=TEST_MIN, max_number_of_players=TEST_MAX,
-                                        court_id=saved_court, ball_game=TEST_BALL_GAME)
+                                        court=saved_court, ball_game=TEST_BALL_GAME)
 
     def test_get_game_event(self, saved_game_event):
         game_event = GameEvent.objects.get(pk=saved_game_event.pk)
@@ -49,29 +49,29 @@ class TestGameEventModel:
 
     def test_create_game_event_with_valid_fields(self, saved_court):
         GameEvent.objects.create(id=TEST_ID, time=TEST_TIME, level_of_game=TEST_LEVEL,
-                                 min_number_of_players=TEST_MIN, max_number_of_players=TEST_MAX, court_id=saved_court,
+                                 min_number_of_players=TEST_MIN, max_number_of_players=TEST_MAX, court=saved_court,
                                  ball_game=TEST_BALL_GAME).full_clean()
 
     def test_create_game_event_with_invalid_ball_game(self, saved_court):
         with pytest.raises(ValidationError):
             GameEvent.objects.create(id=TEST_ID, time=TEST_TIME, level_of_game=TEST_LEVEL,
                                      min_number_of_players=TEST_MIN, max_number_of_players=TEST_MAX,
-                                     court_id=saved_court, ball_game='invalid game').full_clean()
+                                     court=saved_court, ball_game='invalid game').full_clean()
 
     def test_create_game_event_with_blank_date(self, saved_court):
         with pytest.raises(ValidationError):
             GameEvent.objects.create(id=TEST_ID, time='', level_of_game=TEST_LEVEL,
                                      min_number_of_players=TEST_MIN, max_number_of_players=TEST_MAX,
-                                     court_id=saved_court, ball_game=TEST_BALL_GAME).full_clean()
+                                     court=saved_court, ball_game=TEST_BALL_GAME).full_clean()
 
     def test_create_game_event_with_blank_ball_game(self, saved_court):
         with pytest.raises(ValidationError):
             GameEvent.objects.create(id=TEST_ID, time=TEST_TIME, level_of_game=TEST_LEVEL,
                                      min_number_of_players=TEST_MIN, max_number_of_players=TEST_MAX,
-                                     court_id=saved_court, ball_game='').full_clean()
+                                     court=saved_court, ball_game='').full_clean()
 
     def test_create_game_event_with_null_ball_game(self, saved_court):
         with pytest.raises(ValidationError):
             GameEvent.objects.create(id=TEST_ID, time=TEST_TIME, level_of_game=TEST_LEVEL,
                                      min_number_of_players=TEST_MIN, max_number_of_players=TEST_MAX,
-                                     court_id=saved_court,).full_clean()
+                                     court=saved_court,).full_clean()

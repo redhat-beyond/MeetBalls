@@ -45,7 +45,7 @@ class TestMessageModel:
     def saved_game_event(self, saved_court):
         return GameEvent.objects.create(id=TEST_ID, time=TEST_TIME, level_of_game=TEST_LEVEL,
                                         min_number_of_players=TEST_MIN, max_number_of_players=TEST_MAX,
-                                        court_id=saved_court, ball_game=TEST_BALL_GAME)
+                                        court=saved_court, ball_game=TEST_BALL_GAME)
 
     @pytest.fixture
     def saved_message(self, saved_player, saved_game_event):
