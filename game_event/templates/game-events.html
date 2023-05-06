@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+{% load static %}
+<link rel="stylesheet" type="text/css" href="{% static 'css/game-events.css' %}">
+{% block content %}
+<h1>Game Events</h1>
+<div class="filters-container">
+   <form method="GET">
+	  <div class="form-group">
+		 <label for="min_players">Minimum number of players:</label>
+		 <div class="input-group">
+			<input type="number" id="min_players" name="min_players" min="0" max="20" value="{{ request.GET.min_players|default_if_none:'1' }}" class="form-control input-number" onchange="this.form.submit()">
+		 </div>
+		 <label for="max_players">Maximum number of players:</label>
+		 <div class="input-group">
+			<input type="number" id="max_players" name="max_players" min="0" max="20" value="{{ request.GET.max_players|default_if_none:'20' }}" class="form-control input-number" onchange="this.form.submit()">
+		 </div>
+		 <label for="max_level">Max Level:</label>
+		 <div class="input-group">
+			<input type="number" id="max_level" name="max_level" min="0" max="10" value="{{ request.GET.max_level|default_if_none:'20' }}" class="form-control input-number" onchange="this.form.submit()">
+		 </div>
+		 <div class="past-events-checkbox">
+			<input type="checkbox" class="past-events-checkbox" id="hide_past_events" name="hide_past_events" {% if request.GET.hide_past_events %}checked{% endif %} onchange="this.form.submit()">
+			<label class="form-check-label" for="hide_past_events">Hide Past Events</label>
+		 </div>
+	  </div>
+	  <button type="reset" class="btn btn-secondary" value="" onclick="location.href='{{ request.path }}'">Reset</button>
+   </form>
+</div>
+	<script src="https://www.kryogenix.org/code/browser/sorttable/sorttable.js"></script>
+	<table class="sortable">	
+		<thead>
+			<tr>
+				<th>Game ID</th>
+				<th>Time</th>
+				<th>Level</th>
+				<th>Minimum Players</th>
+				<th>Maximum Players</th>
+				<th>Court ID</th>
+				<th>Ballgame</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for event in game_events %}
+			<tr>
+				<td><a href="http://127.0.0.1:8000/game-events/{{ event.id }}/">{{ event.id }}</a></td>
+				<td>{{ event.time }}</td>
+				<td>{{ event.level_of_game }}</td>
+				<td>{{ event.min_number_of_players }}</td>
+				<td>{{ event.max_number_of_players }}</td>
+				<td><a href="http://127.0.0.1:8000/courts/{{ event.court.courtID }}">{{ event.court.courtID }}</a></td>
+				<td>{{ event.ball_game }}</td>
+			</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+{% endblock %}
