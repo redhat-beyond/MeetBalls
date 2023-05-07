@@ -1,0 +1,80 @@
+{% extends "base.html" %} {% block content %}
+<div class="container">
+  <div class="row my-4">
+    <div class="col-md-6 mx-auto">
+      <h1>Create a Game Event</h1>
+      <form method="post" action="/game-events/create/process" style="width: 100%">
+        {% csrf_token %}
+        <div class="form-group">
+          <label for="time">Date and Time of event:</label>
+          <input
+            type="datetime-local"
+            class="form-control"
+            name="time"
+            required
+          />
+        </div>
+        <div class="form-group">
+          <label for="level_of_game">Level of Game:</label>
+          <select class="form-control" name="level_of_game">
+            {% for rating in ratings %}
+            <option value="{{ rating.0 }}">{{ rating.1 }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="min_number_of_players">Minimum Number of Players:</label>
+          <input
+            type="number"
+            class="form-control"
+            name="min_number_of_players"
+            required
+          />
+        </div>
+        <div class="form-group">
+          <label for="max_number_of_players">Maximum Number of Players:</label>
+          <input
+            type="number"
+            class="form-control"
+            name="max_number_of_players"
+            required
+          />
+        </div>
+        <div class="form-group">
+          <label for="court">Court:</label>
+          <select class="form-control" name="court">
+            {% for court in courts %}
+            <option value="{{ court.courtID }}">
+              {{ court.city }} {{ court.neighborhood }}
+            </option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="ball_game">Ball Game:</label>
+          <select class="form-control" name="ball_game">
+            {% for game in games %}
+            <option value="{{ game.0 }}">{{ game.0 }}</option>
+            {% endfor %}
+          </select>
+          <br />
+        </div>
+        <button type="submit" class="btn btn-primary">Create Game Event</button>
+      </form>
+    </div>
+  </div>
+  {% if messages %}
+  <div class="row my-4">
+    <div class="col-md-6 mx-auto">
+      <div class="alert alert-danger" role="alert">
+        <ul class="messages col-12">
+          {% for message in messages %}
+            <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+  </div>
+{% endif %}
+</div>
+{% endblock %}

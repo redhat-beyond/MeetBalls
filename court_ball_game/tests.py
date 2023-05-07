@@ -59,3 +59,10 @@ class TestCourtBallGameModel:
             CourtBallGame.objects.create(
                 court=court_instance
             ).full_clean()
+
+    def test_is_ball_game_playable(self, court_instance, court_ball_game_instance):
+        assert CourtBallGame.is_ball_game_playable(court_instance, BallGame.Basketball)
+
+    def test_is_ball_game_playable_false(self, court_instance):
+        expected = False
+        assert expected == CourtBallGame.is_ball_game_playable(court_instance, BallGame.Basketball)
