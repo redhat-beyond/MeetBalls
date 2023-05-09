@@ -18,7 +18,10 @@
     <nav class="navbar navbar-expand-md navbar bg-warning">
       <div class="container-fluid">
         <a class="navbar-brand" href="/">MeetBalls</a>
-        <button
+        {% if user.is_authenticated %}
+        <P class="navbar-nav ms-auto ">Hello {{user.username}}!</P>
+        {% endif %}
+          <button
           class="navbar-toggler"
           type="button"
           data-bs-toggle="collapse"
@@ -39,11 +42,11 @@
             </li>
             {% if user.is_authenticated %}
             <li class="nav-item">
-              <a class="nav-link" href="#">Logout</a>
+              <a class="nav-link" href="/logout">Logout</a>
             </li>
             {% else %}
             <li class="nav-item">
-              <a class="nav-link" href="#">Login</a>
+              <a class="nav-link" href="/login">Login</a>
             </li>
             {% endif %}
           </ul>
