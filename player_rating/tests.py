@@ -1,5 +1,5 @@
 from .models import PlayerRating, Rating
-from player.models import BallGame, Player
+from player.models import BallGame
 from django.core.exceptions import ValidationError
 from django.db import IntegrityError
 import pytest
@@ -66,11 +66,11 @@ class TestPlayerRatingModel:
                 rating=0)
 
     def test_delete_player_deletes_player_ratings(self, player, player_rating):
-        assert Player.objects.count() == 1
-        assert PlayerRating.objects.count() == 1
+        all_players_ratings_count_before = PlayerRating.objects.count()
+        player_fixture_ratings_count = PlayerRating.objects.filter(player=player).count()
+        assert player_fixture_ratings_count > 0
         player.delete()
-        assert Player.objects.count() == 0
-        assert PlayerRating.objects.count() == 0
+        assert PlayerRating.objects.count() == all_players_ratings_count_before - player_fixture_ratings_count
 
     def test_create_valid_player_rating(self, player):
         PlayerRating.objects.create(
