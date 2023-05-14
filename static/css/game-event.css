@@ -1,0 +1,42 @@
+.other-text {
+   font-family: "Arial", sans-serif;
+   font-size: 18px;
+   color: #333;
+}
+        
+.round-button {
+   display: inline-block;
+   background-color: #a7898e;
+   color: #ece2db;
+   padding: 10px 20px;
+   border-radius: 20px;
+   text-decoration: none;
+}
+.round-button:hover {
+   color: #a7898e;
+   background-color: #ece2db;
+}  
+.nice-table {
+   width: 30%;
+   border-collapse: collapse;
+   margin-top: 10px;
+   border-radius: 10px; /* Adjust the value as per your preference */
+   overflow: hidden;
+}
+
+.nice-table th,
+.nice-table td {
+   padding: 8px;
+   text-align: left;
+   border-bottom: 1px solid #ddd;
+}
+
+.nice-table th {
+   background-color: #a7898e;
+   color: #ece2db;
+}
+
+.ball-image {
+   width: 20px;
+   height: 20px;
+}

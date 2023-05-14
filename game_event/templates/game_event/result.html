@@ -1,0 +1,18 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="stylesheet" type="text/css" href="{% static 'css/game-event.css' %}">
+    </head>
+    <body>
+        {% if event_exists == False %}
+            <h1>Can not remove from event, Event Does not Exist! </h1>
+        {% elif reached_max == True %}
+            <h1>Max number of Player reached! You can't join </h1>
+        {% elif in_event %}
+            <h1>You joined the event!</h1>
+        {% else %}
+            <h1>You are not in the event!</h1>
+        {% endif %}
+    </body>
+</html>
