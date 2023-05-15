@@ -178,4 +178,4 @@ class TestGameEventModel:
         })
         assert GameEvent.objects.count() == count_of_game_events + 1
         assert response.status_code == 302
-        assert response.url == '/'
+        assert response.url == '/game-events/'

@@ -6,6 +6,7 @@ from player.models import BallGame
 from django.utils import timezone
 from django.core.exceptions import ValidationError
 from django.contrib import messages
+from datetime import date
 
 
 def display_game_event_form(request):
@@ -37,6 +38,28 @@ def process_game_event_form(request):
                 messages.error(request, error)
             return redirect("/game-events/create")
 
-        return redirect("/")  # will be changes later to "/game-events"
+        return redirect("/game-events/")
     else:
         return redirect("/game-events/create")
+
+
+def game_events(request):
+    game_events = GameEvent.objects.all()
+
+    if request.GET.get('min_players'):
+        min_players = int(request.GET.get('min_players'))
+        game_events = game_events.filter(min_number_of_players__gte=min_players)
+
+    if request.GET.get('max_players'):
+        max_players = int(request.GET.get('max_players'))
+        game_events = game_events.filter(max_number_of_players__lte=max_players)
+
+    if request.GET.get('max_level'):
+        max_level = int(request.GET.get('max_level'))
+        game_events = game_events.filter(level_of_game__lte=max_level)
+
+    if request.GET.get('hide_past_events'):
+        current_date = date.today()
+        game_events = game_events.filter(time__gte=current_date)
+
+    return render(request, 'game-events.html', {'game_events': game_events})

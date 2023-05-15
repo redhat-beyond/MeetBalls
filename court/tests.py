@@ -28,15 +28,16 @@ class TestCourtModel:
                              city='TEST_CITY', neighborhood='TEST_NEIGHBORHOOD', max_players=30).full_clean()
 
     def test_create_three_courts_without_id(self):
-        court_id1 = Court.objects.create(x=Decimal('11'), y=Decimal('22'),
-                                         city='TEST_CITY', neighborhood='TEST_NEIGHBORHOOD', max_players=30)
-        court_id2 = Court.objects.create(x=Decimal('22'), y=Decimal('33'),
-                                         city='TEST_CITY', neighborhood='TEST_NEIGHBORHOOD', max_players=40)
-        court_id3 = Court.objects.create(x=Decimal('33'), y=Decimal('44'),
-                                         city='TEST_CITY', neighborhood='TEST_NEIGHBORHOOD', max_players=50)
-        assert court_id1.courtID == 1
-        assert court_id2.courtID == 2
-        assert court_id3.courtID == 3
+        court1 = Court.objects.create(x=Decimal('11'), y=Decimal('22'),
+                                      city='TEST_CITY', neighborhood='TEST_NEIGHBORHOOD', max_players=30)
+        court2 = Court.objects.create(x=Decimal('22'), y=Decimal('33'),
+                                      city='TEST_CITY', neighborhood='TEST_NEIGHBORHOOD', max_players=40)
+        court3 = Court.objects.create(x=Decimal('33'), y=Decimal('44'),
+                                      city='TEST_CITY', neighborhood='TEST_NEIGHBORHOOD', max_players=50)
+        first_id = court1.courtID
+        assert court1.courtID == first_id
+        assert court2.courtID == first_id+1
+        assert court3.courtID == first_id+2
 
     def test_create_court_with_negative_max_players(self):
         with pytest.raises(IntegrityError):
