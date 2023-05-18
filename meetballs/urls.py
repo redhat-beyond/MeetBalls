@@ -24,4 +24,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', app_views.home, name='home'),
     path('game-events/', include("game_event.urls")),
+    path('login/', app_views.loginUser, name='loginUser'),
+    path('logout/', app_views.logoutUser, name='logoutUser'),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
