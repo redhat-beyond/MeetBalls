@@ -1,8 +1,9 @@
 from .models import GameEvent
 from django.shortcuts import render, redirect
 from court.models import Court
+from game_event_player.models import GameEventPlayer
 from player_rating.models import Rating
-from player.models import BallGame
+from player.models import BallGame, Player
 from django.utils import timezone
 from django.core.exceptions import ValidationError
 from django.contrib import messages
@@ -63,3 +64,89 @@ def game_events(request):
         game_events = game_events.filter(time__gte=current_date)
 
     return render(request, 'game-events.html', {'game_events': game_events})
+
+
+def game_event(request, id):
+    try:
+        event = GameEvent.objects.get(pk=id)
+    except GameEvent.DoesNotExist:
+        return render(request, 'game_event/game-event.html', {})
+    try:
+        player = Player.objects.get(user=request.user)
+    except Player.DoesNotExist:
+        context = {
+            'id': event.id,
+            'time': event.time,
+            'level_of_game': event.level_of_game,
+            'min_number_of_players': event.min_number_of_players,
+            'max_number_of_players': event.max_number_of_players,
+            'court': event.court.city,
+            'neighborhood': event.court.neighborhood,
+            'ball_game': event.ball_game,
+            'in_event': False,
+        }
+        return render(request, 'game_event/game-event.html', context)
+
+    event_players = [
+        {
+            "first_name": entry.player.user.first_name,
+            "last_name": entry.player.user.last_name,
+            "brings_ball": entry.ball_responsible,
+        }
+        for entry in GameEventPlayer.objects.filter(game_event=event)
+    ]
+    in_event = GameEventPlayer.objects.filter(game_event=event, player=player).exists()
+    context = {
+        'id': event.id,
+        'time': event.time,
+        'level_of_game': event.level_of_game,
+        'min_number_of_players': event.min_number_of_players,
+        'max_number_of_players': event.max_number_of_players,
+        'court': event.court.city,
+        'neighborhood': event.court.neighborhood,
+        'ball_game': event.ball_game,
+        'in_event': in_event,
+        'event_players': event_players
+        }
+    return render(request, 'game_event/game-event.html', context)
+
+
+def join_event(request, id):
+    try:
+        GameEvent.objects.get(pk=id)
+    except GameEvent.DoesNotExist:
+        return render(request, 'game_event/join-event.html', {'id': id, 'event_exists': False})
+
+    return render(request, 'game_event/join-event.html', {'id': id, 'event_exists': True})
+
+
+def remove_from_event(request, id):
+    try:
+        event = GameEvent.objects.get(pk=id)
+    except GameEvent.DoesNotExist:
+        return render(request, 'game_event/result.html', {'event_exists': False})
+    player = Player.objects.get(user=request.user)
+    GameEventPlayer.objects.get(game_event=event, player=player).delete()
+    return render(request, 'game_event/result.html', {'event_exists': True})
+
+
+def process_answer_game_event(request, id):
+    try:
+        event = GameEvent.objects.get(pk=id)
+    except GameEvent.DoesNotExist:
+        return render(request, 'game_event/result.html', {'event_exists': False})
+
+    player = Player.objects.get(user=request.user)
+    ball_responsible = request.POST.get('answer') == 'yes'
+    content = {}
+    num_of_players_in_event = len(GameEventPlayer.objects.filter(game_event=event))
+    if num_of_players_in_event < event.max_number_of_players:
+        GameEventPlayer.objects.create(game_event=event, player=player, ball_responsible=ball_responsible).save()
+        in_event = GameEventPlayer.objects.filter(game_event=event, player=player).exists()
+        content["in_event"] = in_event
+        content["reached_max"] = False
+    else:
+        content["reached_max"] = True
+    content['event_exists'] = True
+
+    return render(request, 'game_event/result.html', content)
