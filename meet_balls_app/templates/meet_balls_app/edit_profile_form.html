@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div style="width: 40%; margin: 0 auto;">
+
+  <h1>Edit Player Profile</h1>
+  <form method="post">
+    {% csrf_token %}
+
+    <div class="form-group">
+      <label for="id_birth_date">Birth Date</label>
+      <input type="date" class="form-control" id="id_birth_date" name="birth_date" value="{{ player.birth_date|date:'Y-m-d' }}">
+    </div>
+
+    <div class="form-group">
+      <label for="id_favorite_ball_game">Favorite Ball Game</label>
+      <select class="form-control" id="id_favorite_ball_game" name="favorite_ball_game">
+        {% for ball_game in ball_games %}
+          <option value="{{ ball_game.0 }}" {% if player.favorite_ball_game == ball_game.0 %}selected{% endif %}>{{ ball_game.0 }}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <h2>Player Ratings</h2>
+    {% for rating in ratings %}
+      <div class="form-group">
+        <label for="id_rating_{{ rating.id }}">Rating for {{ rating.ball_game }}</label>
+        <input type="number" min="0" max="10" class="form-control" id="id_rating_{{ rating.id }}" name="rating[{{ rating.id }}]" value="{{ rating.rating }}" required>
+      </div>
+    {% endfor %}
+    <button onclick="location.href='{% url 'profile' player.user.id %}'" class="round-button mt-3">Cancel</button>
+    <button type="submit" class="round-button">Save Changes</button>
+  </form>
+
+  {% if messages %}
+  <div class="row my-4">
+    <div class="col">
+      <div class="alert alert-danger" role="alert">
+        <ul class="messages">
+          {% for message in messages %}
+            <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+  </div>
+{% endif %}
+</div>
+
+{% endblock %}

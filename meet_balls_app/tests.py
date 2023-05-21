@@ -3,6 +3,7 @@ from player.models import Player
 import pytest
 from django.urls import reverse
 from django.utils import timezone
+from player.models import BallGame
 
 
 class TestUi:
@@ -195,3 +196,84 @@ class TestRegister:
         response = client.get(login_url)
         assert response.status_code == 200
         assert response.request['PATH_INFO'] == '/login/'
+
+
+@pytest.mark.django_db
+class TestProfile:
+
+    def test_profile_view(self, client, player, player_rating, court, court_ball_game, game_event, game_event_player):
+        url = reverse('profile', kwargs={'id': player.user.id})
+        client.force_login(player.user)
+        response = client.get(url)
+        assert response.status_code == 200
+        assert player.user.username in response.content.decode()
+        assert player.favorite_ball_game in response.content.decode()
+        assert '<td>' + str(player_rating.rating) + '</td>' in response.content.decode()
+        assert '<td>' + str(game_event.ball_game) + '</td>' in response.content.decode()
+        assert b'<button onclick' in response.content
+
+    def test_profile_view_edit_button_not_displayed(self, client, player):
+        not_player_user_id = 5
+        url = reverse('profile', kwargs={'id': not_player_user_id})
+        client.force_login(player.user)
+        response = client.get(url)
+        assert response.status_code == 200
+        assert b'<button onclick' not in response.content
+
+    def test_profile_view_player_not_found(self, client, player):
+        non_existing_player_id = 1234567890
+        url = reverse('profile', kwargs={'id': non_existing_player_id})
+        client.force_login(player.user)
+        response = client.get(url)
+        assert response.status_code == 200
+        assert 'Player Not Found' in response.content.decode()
+        assert 'The requested player does not exist.' in response.content.decode()
+
+    def test_display_edit_profile_form(self, client, player):
+        url = reverse('edit profile')
+        client.force_login(player.user)
+        response = client.get(url)
+        assert response.status_code == 200
+        assert 'Edit Player Profile' in response.content.decode()
+
+    def test_edit_profile_post_invalid(self, client, player):
+        url = reverse('edit profile')
+        client.force_login(player.user)
+        initial_birth_date = player.birth_date
+        initial_favorite_ball_game = player.favorite_ball_game
+
+        data = {
+            'birth_date': 'invalid_date',
+            'favorite_ball_game': 'Basketball',
+        }
+        assert player.favorite_ball_game != BallGame.Basketball
+        assert player.birth_date != "invalid_date"
+        response = client.post(url, data)
+        assert response.status_code == 302
+        assert response.url == reverse('edit profile')
+
+        player.refresh_from_db()
+
+        assert player.birth_date == datetime.datetime.strptime(initial_birth_date, '%Y-%m-%d').date()
+        assert player.favorite_ball_game == initial_favorite_ball_game
+
+    def test_edit_profile_post_valid(self, client, player):
+        url = reverse('edit profile')
+        client.force_login(player.user)
+
+        data = {
+            'birth_date': '2000-02-02',
+            'favorite_ball_game': 'Tennis',
+        }
+        expected_birth_date = datetime.datetime.strptime('2000-02-02', '%Y-%m-%d').date()
+        assert player.birth_date != expected_birth_date
+        assert player.favorite_ball_game != BallGame.Tennis
+
+        response = client.post(url, data)
+        assert response.status_code == 302
+        assert response.url == reverse('profile', kwargs={'id': player.user.id})
+
+        player.refresh_from_db()
+
+        assert player.birth_date == expected_birth_date
+        assert player.favorite_ball_game == BallGame.Tennis

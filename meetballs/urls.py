@@ -27,4 +27,7 @@ urlpatterns = [
     path('login/', app_views.loginUser, name='loginUser'),
     path('logout/', app_views.logoutUser, name='logoutUser'),
     path('register/', app_views.registerUser, name='registerUser'),
+    path('profile/<id>/', app_views.profile, name='profile'),
+    path('edit-profile/', app_views.edit_profile, name='edit profile'),
+
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
