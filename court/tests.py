@@ -8,12 +8,6 @@ from django.core.exceptions import ValidationError
 @pytest.mark.django_db
 class TestCourtModel:
 
-    @pytest.fixture
-    def court(self):
-        court = Court.objects.create(x=Decimal('11'), y=Decimal('22'),
-                                     city='TEST_CITY', neighborhood='TEST_NEIGHBORHOOD', max_players=30)
-        return court
-
     def test_get_instance(self, court):
         court_in_db = Court.objects.get(pk=court.pk)
         assert court_in_db == court

@@ -5,8 +5,6 @@ from django.core.exceptions import ValidationError
 from .models import GameEventPlayer
 from game_event.models import GameEvent
 from player.models import Player, BallGame
-from court.models import Court
-from decimal import Decimal
 from django.utils import timezone
 
 
@@ -74,24 +72,17 @@ def players(saved_player, saved_player2, saved_player3):
 
 
 @pytest.fixture
-def saved_court():
-    court = Court.objects.create(x=Decimal('11'), y=Decimal('22'),
-                                 city='TEST_CITY', neighborhood='TEST_NEIGHBORHOOD', max_players=30)
-    return court
-
-
-@pytest.fixture
-def saved_game_event(saved_court):
+def saved_game_event(court):
     game_event = GameEvent.objects.create(id=ID1, time=timezone.now(), level_of_game=3,
-                                          min_number_of_players=2, max_number_of_players=5, court=saved_court,
+                                          min_number_of_players=2, max_number_of_players=5, court=court,
                                           ball_game='Basketball')
     return game_event
 
 
 @pytest.fixture
-def saved_game_event2(saved_court):
+def saved_game_event2(court):
     game_event = GameEvent.objects.create(id=ID2, time=timezone.now(), level_of_game=3,
-                                          min_number_of_players=2, max_number_of_players=5, court=saved_court,
+                                          min_number_of_players=2, max_number_of_players=5, court=court,
                                           ball_game='Basketball')
     return game_event
 
