@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-4">
+            <h2 class="text-center mb-4">Register</h2>
+            <form method="post">
+                {% csrf_token %}
+                <div class="mb-2">
+                    <label for="first_name" class="form-label">First Name:</label>
+                    <input type="text" class="form-control" name="first_name" required>
+                </div>
+                <div class="mb-3">
+                    <label for="last_name" class="form-label">Last Name:</label>
+                    <input type="text" class="form-control" name="last_name" required>
+                </div>
+                <div class="mb-3">
+                    <label for="username" class="form-label">Username:</label>
+                    <input type="text" class="form-control" name="username" required>
+                </div>
+                <div class="mb-3">
+                    <label for="password" class="form-label">Password:</label>
+                    <input type="password" class="form-control" name="password" required>
+                </div>
+                <div class="mb-3">
+                    <label for="confirm_password" class="form-label">Confirm Password:</label>
+                    <input type="password" class="form-control" name="confirm_password" required>
+                </div>
+                <div class="mb-3">
+                    <label for="birthdate" class="form-label">Birthdate:</label>
+                    <input type="date" class="form-control" name="birthdate" required>
+                </div>
+                <div class="mb-3">
+                    <label for="favorite_ball_game" class="form-label">Favorite Ball Game:</label>
+                    <select class="form-select" name="favorite_ball_game" required>
+                        {% for ball_game in ball_games %}
+                        <option value="{{ ball_game.0 }}">{{ ball_game.1 }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary">Register</button>
+            </form>
+            <p>Already have an account? <a href="{% url 'loginUser' %}">Login</a>.</p>
+            {% if messages %}
+            <div class="row my-4">
+                <div class="col-12">
+                    <div class="alert alert-danger" role="alert">
+                        <ul class="messages">
+                            {% for message in messages %}
+                            <li{% if message.tags %} class="{{ message.tags }}" {% endif %}>{{ message }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
