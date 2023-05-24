@@ -1,6 +1,8 @@
 from player.models import BallGame, Player
 from court.models import Court
 from court_ball_game.models import CourtBallGame
+from notification.models import Notification, NotificationType
+from django.utils import timezone
 from decimal import Decimal
 import pytest
 
@@ -26,3 +28,14 @@ def court():
 def court_ball_game(court):
     court_ball_game = CourtBallGame.objects.create(court=court, ball_game=BallGame.Basketball)
     return court_ball_game
+
+
+@pytest.fixture
+def notification(player):
+    return Notification.objects.create(
+        player=player,
+        sent_time=timezone.now(),
+        message='Test notification',
+        notification_type=NotificationType.WEBSITE,
+        is_read=False
+    )
