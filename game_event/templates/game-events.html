@@ -5,29 +5,29 @@
 <h1>Game Events</h1>
 <div class="filters-container">
    <form method="GET">
-	  <div class="form-group">
+	  <div class="game-events-filters-group">
 		 <label for="min_players">Minimum number of players:</label>
-		 <div class="input-group">
+		 <div class="input-min-players">
 			<input type="number" id="min_players" name="min_players" min="0" max="20" value="{{ request.GET.min_players|default_if_none:'1' }}" class="form-control input-number" onchange="this.form.submit()">
 		 </div>
 		 <label for="max_players">Maximum number of players:</label>
-		 <div class="input-group">
+		 <div class="input-max-players">
 			<input type="number" id="max_players" name="max_players" min="0" max="20" value="{{ request.GET.max_players|default_if_none:'20' }}" class="form-control input-number" onchange="this.form.submit()">
 		 </div>
 		 <label for="max_level">Max Level:</label>
-		 <div class="input-group">
+		 <div class="input-max-level">
 			<input type="number" id="max_level" name="max_level" min="0" max="10" value="{{ request.GET.max_level|default_if_none:'20' }}" class="form-control input-number" onchange="this.form.submit()">
 		 </div>
+		  <button type="reset" class="reset-button" value="" onclick="location.href='{{ request.path }}'">Reset</button>
 		 <div class="past-events-checkbox">
 			<input type="checkbox" class="past-events-checkbox" id="hide_past_events" name="hide_past_events" {% if request.GET.hide_past_events %}checked{% endif %} onchange="this.form.submit()">
 			<label class="form-check-label" for="hide_past_events">Hide Past Events</label>
 		 </div>
 	  </div>
-	  <button type="reset" class="btn btn-secondary" value="" onclick="location.href='{{ request.path }}'">Reset</button>
    </form>
 </div>
 	<script src="https://www.kryogenix.org/code/browser/sorttable/sorttable.js"></script>
-	<table class="sortable">	
+	<table class="sortable">
 		<thead>
 			<tr>
 				<th>Game ID</th>
@@ -39,7 +39,8 @@
 				<th>Ballgame</th>
 			</tr>
 		</thead>
-        <a href="/game-events/create" class="btn btn-primary mb-2">Create Game Event</a>
+        <button onclick="location.href='/game-events/create'" class="create-game-event-button">Create Game Event</button>
+		<br><br>
 		<tbody>
 			{% for event in game_events %}
 			<tr>

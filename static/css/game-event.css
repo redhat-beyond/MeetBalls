@@ -3,7 +3,7 @@
    font-size: 18px;
    color: #333;
 }
-        
+
 .round-button {
    display: inline-block;
    background-color: #a7898e;
@@ -15,7 +15,7 @@
 .round-button:hover {
    color: #a7898e;
    background-color: #ece2db;
-}  
+}
 .nice-table {
    width: 30%;
    border-collapse: collapse;
