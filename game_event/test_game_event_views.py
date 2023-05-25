@@ -17,29 +17,35 @@ class TestGameEventServerResponses:
     def test_shown_min_player_filter(self, client, game_event):
         response = client.get(reverse(game_events), {'min_players': '2'})
         assert response.status_code == 200
-        assert game_event in response.context['game_events']
+        game_events_response = response.context['game_events']
+        assert any(game.id == game_event.id for game in game_events_response)
 
     def test_not_shown_min_player_filter(self, client, game_event):
         response = client.get(reverse(game_events), {'min_players': '10'})
         assert response.status_code == 200
-        assert game_event not in response.context['game_events']
+        game_events_response = response.context['game_events']
+        assert not any(game.id == game_event.id for game in game_events_response)
 
     def test_shown_max_player_filter(self, client, game_event):
         response = client.get(reverse(game_events), {'max_players': '15'})
         assert response.status_code == 200
-        assert game_event in response.context['game_events']
+        game_events_response = response.context['game_events']
+        assert any(game.id == game_event.id for game in game_events_response)
 
     def test_not_shown_max_player_filter(self, client, game_event):
         response = client.get(reverse(game_events), {'max_players': '2'})
         assert response.status_code == 200
-        assert game_event not in response.context['game_events']
+        game_events_response = response.context['game_events']
+        assert not any(game.id == game_event.id for game in game_events_response)
 
     def test_shown_max_level_filter(self, client, game_event):
         response = client.get(reverse(game_events), {'max_level': '10'})
         assert response.status_code == 200
-        assert game_event in response.context['game_events']
+        game_events_response = response.context['game_events']
+        assert any(game.id == game_event.id for game in game_events_response)
 
     def test_not_shown_max_level_filter(self, client, game_event):
         response = client.get(reverse(game_events), {'max_level': '2'})
         assert response.status_code == 200
-        assert game_event not in response.context['game_events']
+        game_events_response = response.context['game_events']
+        assert not any(game.id == game_event.id for game in game_events_response)

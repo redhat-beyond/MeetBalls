@@ -9,6 +9,9 @@ from django.core.exceptions import ValidationError
 from django.contrib import messages
 from message.models import Message
 from datetime import date
+import urllib.request
+import json
+import os
 
 
 def display_game_event_form(request):
@@ -47,7 +50,6 @@ def process_game_event_form(request):
 
 def game_events(request):
     game_events = GameEvent.objects.all()
-
     if request.GET.get('min_players'):
         min_players = int(request.GET.get('min_players'))
         game_events = game_events.filter(min_number_of_players__gte=min_players)
@@ -63,6 +65,8 @@ def game_events(request):
     if request.GET.get('hide_past_events'):
         current_date = date.today()
         game_events = game_events.filter(time__gte=current_date)
+
+    game_events = get_weather_from_api(game_events, urllib.request.urlopen)
 
     return render(request, 'game-events.html', {'game_events': game_events})
 
@@ -153,3 +157,30 @@ def process_answer_game_event(request, id):
     content['event_exists'] = True
 
     return render(request, 'game_event/result.html', content)
+
+
+def get_weather_from_api(game_events, weather_getter):
+    url = 'https://api.openweathermap.org/data/2.5/weather'
+    params = {'units': 'metric', 'appid': os.getenv("APPID")}
+    for game in game_events:
+
+        params['q'] = game.court.city
+
+        full_url = url + '?' + urllib.parse.urlencode(params)
+        try:
+            response = weather_getter(full_url)
+        except Exception:
+            game.weather = None
+            continue
+
+        if response.status == 200:
+            data = response.read().decode('utf-8')
+            weather_data = json.loads(data)
+            curr_icon = weather_data['weather'][0]['icon']
+            icon_url = "http://openweathermap.org/img/wn/" + curr_icon + "@2x.png"
+            curr_temp = weather_data['main']['temp']
+            game.weather = {'icon': icon_url, 'temp': curr_temp}
+        else:
+            game.weather = None
+
+    return game_events

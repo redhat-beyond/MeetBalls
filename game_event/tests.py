@@ -5,10 +5,13 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.utils import timezone
 from player.models import BallGame
 from django.urls import reverse
-from .views import process_game_event_form
+from .views import process_game_event_form, get_weather_from_api
 from datetime import timedelta
 import pytest
 from django.db import IntegrityError
+from unittest import mock
+import urllib
+
 
 TEST_ID = 2
 TEST_TIME = timezone.now()
@@ -16,6 +19,24 @@ TEST_LEVEL = 3
 TEST_MIN = 2
 TEST_MAX = 5
 TEST_BALL_GAME = 'Basketball'
+
+
+@pytest.fixture
+def mock_urlopen():
+    return mock.create_autospec(urllib.request.urlopen)
+
+
+@pytest.fixture
+def another_game_event(court):
+    return GameEvent.objects.create(
+        id=1002,
+        time=timezone.now() - timezone.timedelta(days=1),
+        level_of_game=5,
+        min_number_of_players=4,
+        max_number_of_players=10,
+        court=court,
+        ball_game='Basketball'
+    )
 
 
 @pytest.mark.django_db
@@ -252,3 +273,69 @@ class TestGameEventViews:
         assert response.status_code == 200
         with pytest.raises(IntegrityError):
             response = client.post(url, {'answer': 'yes'})
+
+
+@pytest.mark.django_db
+class TestGetWeatherFromApi:
+    def test_one_valid_response(self, game_event, player, mock_urlopen, court):
+        mock_response = mock.Mock()
+        mock_response.status = 200
+        mock_response.read.return_value = bytes('{"weather": [{"icon": "04d"}],"main": {"temp": 13.19}}', 'utf-8')
+        mock_urlopen.return_value = mock_response
+
+        assert not hasattr(game_event, 'weather')
+        game_events = [game_event]
+
+        size_before = len(game_events)
+        output = get_weather_from_api(game_events, mock_urlopen)
+        assert size_before == len(output)
+
+        expected_weather = {'icon': "http://openweathermap.org/img/wn/04d@2x.png", 'temp': 13.19}
+
+        weathers = [game.weather for game in output]
+        assert weathers == [expected_weather]
+
+    def test_exception_thrown_from_api_call(self, game_event, player, mock_urlopen):
+        mock_urlopen.side_effect = Exception()
+
+        assert not hasattr(game_event, 'weather')
+        game_events = [game_event]
+
+        size_before = len(game_events)
+        output = get_weather_from_api(game_events, mock_urlopen)
+        assert size_before == len(output)
+
+        weathers = [game.weather for game in output]
+        assert weathers == [None]
+
+    def test_one_invalid_response_status_code(self, game_event, player, mock_urlopen):
+        mock_response = mock.Mock()
+        mock_response.status = 185
+        mock_urlopen.return_value = mock_response
+
+        assert not hasattr(game_event, 'weather')
+        game_events = [game_event]
+
+        size_before = len(game_events)
+        output = get_weather_from_api(game_events, mock_urlopen)
+        assert size_before == len(output)
+
+        weathers = [game.weather for game in output]
+        assert weathers == [None]
+
+    def test_empty_game_events_list_valid_empty_dictionary_response(self, player):
+        game_events = []
+        get_weather_from_api(game_events, "does not matter")
+        assert game_events == []
+
+    def test_two_valid_game_events_list_valid_response(self, game_event, another_game_event, player, mock_urlopen):
+        mock_response = mock.Mock()
+        mock_response.status = 200
+        mock_response.read.return_value = bytes('{"weather": [{"icon": "04d"}],"main": {"temp": 13.19}}', 'utf-8')
+        mock_urlopen.return_value = mock_response
+        game_events = [game_event, another_game_event]
+        output = get_weather_from_api(game_events, mock_urlopen)
+        expected_weather = {'icon': "http://openweathermap.org/img/wn/04d@2x.png", 'temp': 13.19}
+
+        weathers = [game.weather for game in output]
+        assert weathers == [expected_weather, expected_weather]
