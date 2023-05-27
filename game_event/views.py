@@ -7,6 +7,7 @@ from player.models import BallGame, Player
 from django.utils import timezone
 from django.core.exceptions import ValidationError
 from django.contrib import messages
+from message.models import Message
 from datetime import date
 
 
@@ -96,6 +97,7 @@ def game_event(request, id):
         for entry in GameEventPlayer.objects.filter(game_event=event)
     ]
     in_event = GameEventPlayer.objects.filter(game_event=event, player=player).exists()
+    all_messages = Message.objects.filter(game_event_id=event)
     context = {
         'id': event.id,
         'time': event.time,
@@ -106,7 +108,8 @@ def game_event(request, id):
         'neighborhood': event.court.neighborhood,
         'ball_game': event.ball_game,
         'in_event': in_event,
-        'event_players': event_players
+        'event_players': event_players,
+        'all_messages': all_messages
         }
     return render(request, 'game_event/game-event.html', context)
 

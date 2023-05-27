@@ -4,70 +4,140 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <link href="/static/css/chat.css" rel="stylesheet" />
+      
     <title>Game Event</title>
     <link rel="stylesheet" type="text/css" href="{% static 'css/game-event.css' %}">
-    <script>
-        setTimeout(function() {
-            location.reload();
-        }, 5000);
-    </script>
+    
   </head>
   <body>
-    {% if time %}
-        <h1>Event Details</h1>
-        <p>Time: {{ time }}</p>
-        <p>Level: {{ level_of_game }}</p>
-        <p>Min Players: {{ min_number_of_players }}</p>
-        <p>Max Players: {{ max_number_of_players }}</p>
-        <p>Court: {{ court }} {{ neighborhood }}</p>
-        <p>Game: {{ ball_game }}</p>
-        <h2>Players:</h2>
-        <table class="nice-table">
-            <thead>
-                <tr>
-                <th> </th>
-                <th>Name</th>
-                <th>Brings Ball</th>
-            </tr>
-            </thead>
-                <tbody>
-                    {% for player in event_players %}
-                        <tr>
-                            <td>
-                                <img src="{% static 'images/favicon.ico' %}" alt="Ball Image" class="ball-image">
-                            </td>
-                            <td>{{ player.first_name }} {{ player.last_name }}</td>
-                            <td>
-                                {% if player.brings_ball == True %}
-                                    Yes
+        {% if time %}
+            <h1>Event Details</h1>
+            <p>Time: {{ time }}</p>
+            <p>Level: {{ level_of_game }}</p>
+            <p>Min Players: {{ min_number_of_players }}</p>
+            <p>Max Players: {{ max_number_of_players }}</p>
+            <p>Court: {{ court }} {{ neighborhood }}</p>
+            <p>Game: {{ ball_game }}</p>
+            <h2>Players:</h2>
+            <table class="nice-table">
+                <thead>
+                    <tr>
+                    <th> </th>
+                    <th>Name</th>
+                    <th>Brings Ball</th>
+                </tr>
+                </thead>
+                    <tbody>
+                        {% for player in event_players %}
+                            <tr>
+                                <td>
+                                    <img src="{% static 'images/favicon.ico' %}" alt="Ball Image" class="ball-image">
+                                </td>
+                                <td>{{ player.first_name }} {{ player.last_name }}</td>
+                                <td>
+                                    {% if player.brings_ball == True %}
+                                        Yes
+                                    {% else %}
+                                        No
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <div>
+                    {% if in_event %}
+                        <a href="/game-events/remove-from-event/{{ id }}/"
+                        class="round-button"
+                        onclick="window.open(this.href, 'Remove Event', 'width=400,height=250,left='+((screen.width-400)/2)+',top='+((screen.height-515)/2)); return false;">
+                        Remove Event
+                        </a>
+                            <div class="top-right">
+                                <h1>Chat With Players!</h1>
+                            <body>
+                                    
+                                    {% if all_messages %}
+                                    <div id="savedText">
+                                            <div class="message-box">
+                                              {% for message in all_messages %}
+
+                                              {% if message.user_id.user.username == request.user.username %}
+                                                <div class="message-container">
+                                                  <span class="message-time">{{ message.time_sent|date:"F d, H:i" }}</span> 
+                                                  <span class="name">{{ message.user_id.user.username }}</span><br>
+                                                            <p><span class="message">{{ message.text }}</span></p>
+                                                </div>
+
+                                                {% else %}
+                                                <div class="message-other-user-container">
+                                                  <span class="message-other-time">{{ message.time_sent|date:"F d, H:i" }}</span> 
+                                                  <span class="name-other">{{ message.user_id.user.username }}</span><br>
+                                                            <p><span class="message-other">{{ message.text }}</span></p>
+                                                </div>
+                                                {% endif %}
+                                              {% endfor %}
+                             
+                                              
+                                            </div>
+                                          </div>
+                                        
                                 {% else %}
-                                    No
+                                    <div id="savedText" style="display: none;">
+                <textarea id="savedTextbox" rows="12" cols="50" readonly></textarea>
+         </div>
                                 {% endif %}
-                            </td>
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+                                
+                                <div class="input">
+                                    <form method="POST" action="{% url 'save_text_message' id=id %}">
+                                        {% csrf_token %}
+                                    <input type="text" id="mytextbox" name="mytextbox" placeholder="Type your message here!">
+                                    <button onclick="saveText(); showSaveBox();">Send</button>
+                                    </div>
+                                    </form>
+                                <script>
+                                    function saveText() {
+                                        var textbox = document.getElementById('mytextbox');
+                                        var savedTextbox = document.getElementById('savedTextbox');
+                                        
+                                    }
+                                    function showSaveBox() {
+                                        var savedTextDiv = document.getElementById('savedText');
+                                        savedTextDiv.style.display = 'block';
+                                     }
+                                     
+                                </script>
+                                {% if messages %}
+                                <div class="row my-4">
+                                  <div class="col">
+                                    <div class="alert alert-danger" role="alert">
+                                      <ul class="messages">
+                                        {% for message in messages %}
+                                          <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+                                        {% endfor %}
+                                      </ul>
+                                    </div>
+                                  </div>
+                                </div>
+                              {% endif %}
+
+                            </body>
+							
+                            
+                            </div>
+                    {% else %}
+                        <a href="/game-events/join-event/{{ id }}/"
+                        class="round-button"
+                        onclick="window.open(this.href, 'Join Event', 'width=400,height=250,left='+((screen.width-400)/2)+',top='+((screen.height-515)/2)); return false;">
+                        Join Event
+                        </a>
+                    {% endif %}
+                </div>
+        {% else %} 
             <div>
-                {% if in_event %}
-                    <a href="/game-events/remove-from-event/{{ id }}/"
-                    class="round-button"
-                    onclick="window.open(this.href, 'Remove Event', 'width=400,height=250,left='+((screen.width-400)/2)+',top='+((screen.height-515)/2)); return false;">
-                    Remove Event
-                    </a>
-                {% else %}
-                    <a href="/game-events/join-event/{{ id }}/"
-                    class="round-button"
-                    onclick="window.open(this.href, 'Join Event', 'width=400,height=250,left='+((screen.width-400)/2)+',top='+((screen.height-515)/2)); return false;">
-                    Join Event
-                    </a>
-                {% endif %}
+                <h1> Event Does not exist. </h1>
             </div>
-       {% else %} 
-        <div>
-            <h1> Event Does not exist. </h1>
-        </div>
-       {% endif %}
-  </body>
+        {% endif %}
+ </body>
 </html>
 {%endblock%}
