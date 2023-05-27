@@ -5,6 +5,7 @@
         <link rel="stylesheet" type="text/css" href="{% static 'css/game-event.css' %}">
     </head>
     <body>
+        
         {% if event_exists == False %}
             <h1>Can not remove from event, Event Does not Exist! </h1>
         {% elif reached_max == True %}

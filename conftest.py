@@ -69,3 +69,28 @@ def game_event_player(game_event, player):
         player=player,
         ball_responsible=False
         )
+
+
+@pytest.fixture
+def five_players():
+    return [
+        Player.create(
+            username=f'Player{i}',
+            password='password',
+            birth_date='1990-01-01',
+            favorite_ball_game=BallGame.Basketball
+        )
+        for i in range(1, 6)
+    ]
+
+
+@pytest.fixture
+def five_game_event_players(game_event, five_players):
+    return [
+        GameEventPlayer.objects.create(
+            game_event=game_event,
+            player=player,
+            ball_responsible=False
+        )
+        for player in five_players
+    ]

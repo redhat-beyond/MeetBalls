@@ -11,3 +11,12 @@ class GameEventPlayer(models.Model):
     class Meta:
         constraints = [models.UniqueConstraint(fields=['game_event', 'player'], name='unique_game_event_player')]
         unique_together = ('game_event', 'player')
+
+    @staticmethod
+    def remove_player_and_check_event_deletion(game_event, player):
+        deleted = False
+        GameEventPlayer.objects.get(game_event=game_event, player=player).delete()
+        if not GameEventPlayer.objects.filter(game_event=game_event).exists():
+            game_event.delete()
+            deleted = True
+        return deleted
