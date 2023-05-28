@@ -1,0 +1,18 @@
+h1, h2 {
+    color: #AB8E90;
+}
+
+body {
+    background-color: #fcf3f0;
+}
+
+.navbar-brand {
+    font-size: 40px;
+    color: #F5B5AB;
+    font-weight: normal;
+}
+
+.navbar-brand:hover {
+    color: #f5c4bc ;
+}
+
