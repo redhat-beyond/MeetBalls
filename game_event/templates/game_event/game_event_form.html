@@ -2,10 +2,10 @@
 <div class="container">
   <div class="row my-4">
     <div class="col-md-6 mx-auto">
-      <h1>Create a Game Event</h1>
+      <h1 class="create-game-event-header">Create a Game Event</h1>
       <form method="post" action="/game-events/create/process" style="width: 100%">
         {% csrf_token %}
-        <div class="form-group">
+        <div class="input-time-create-game-event">
           <label for="time">Date and Time of event:</label>
           <input
             type="datetime-local"
@@ -14,7 +14,7 @@
             required
           />
         </div>
-        <div class="form-group">
+        <div class="input-level-of-game-create-game-event">
           <label for="level_of_game">Level of Game:</label>
           <select class="form-control" name="level_of_game">
             {% for rating in ratings %}
@@ -22,7 +22,7 @@
             {% endfor %}
           </select>
         </div>
-        <div class="form-group">
+        <div class="input-min-num-of-players-create-game-event">
           <label for="min_number_of_players">Minimum Number of Players:</label>
           <input
             type="number"
@@ -31,7 +31,7 @@
             required
           />
         </div>
-        <div class="form-group">
+        <div class="input-max-num-of-players-create-game-event">
           <label for="max_number_of_players">Maximum Number of Players:</label>
           <input
             type="number"
@@ -40,7 +40,7 @@
             required
           />
         </div>
-        <div class="form-group">
+        <div class="input-court-create-game-event">
           <label for="court">Court:</label>
           <select class="form-control" name="court">
             {% for court in courts %}
@@ -50,7 +50,7 @@
             {% endfor %}
           </select>
         </div>
-        <div class="form-group">
+        <div class="input-ball-game-create-game-event">
           <label for="ball_game">Ball Game:</label>
           <select class="form-control" name="ball_game">
             {% for game in games %}
@@ -59,7 +59,7 @@
           </select>
           <br />
         </div>
-        <button type="submit" class="btn btn-primary">Create Game Event</button>
+        <button type="submit" class="create-game-event-form-button">Create Game Event</button>
       </form>
     </div>
   </div>

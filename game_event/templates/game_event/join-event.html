@@ -2,26 +2,25 @@
 <!DOCTYPE html>
 <html>
   <head>
-    
     <link rel="stylesheet" type="text/css" href="{% static 'css/game-event.css' %}">
-  </style>
   </head>
   <body>
     {% if event_exists %}
     <h1>Game Event</h1>
     <form method="POST" action="{% url 'process_answer_game_event' id=id %}">
-      {% csrf_token %}
+    {% csrf_token %}
       <p>Are you bringing a ball?</p>
       <label>
-        <input type="radio" name="answer" value="yes" class"=other-text">
+        <input type="radio" name="answer" value="yes" class="other-text">
         Yes
       </label>
       <label>
-        <input type="radio" name="answer" value="no" class"=other-text">
+        <input type="radio" name="answer" value="no" class="other-text">
         No
       </label>
       <div class="button-container">
         <button type="submit" class="round-button">Submit</button>
+      </div>
     </form>
       </div>
     {% else %}
