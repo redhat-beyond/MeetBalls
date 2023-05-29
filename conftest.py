@@ -22,7 +22,7 @@ def player():
 
 @pytest.fixture
 def player_rating(player):
-    return PlayerRating.objects.create(ball_game="Basketball", player=player, rating=5)
+    return PlayerRating.objects.create(ball_game=BallGame.Baseball, player=player, rating=5)
 
 
 @pytest.fixture
@@ -50,16 +50,22 @@ def notification(player):
 
 
 @pytest.fixture
-def game_event(court, court_ball_game):
+def game_event(court):
     return GameEvent.objects.create(
-        id=20,
+        id=2,
         time=timezone.now(),
-        level_of_game=5,
-        min_number_of_players=3,
+        level_of_game=3,
+        min_number_of_players=2,
         max_number_of_players=5,
-        court=court, ball_game="Basketball")
+        court=court,
+        ball_game=BallGame.Baseball
+        )
 
 
 @pytest.fixture
 def game_event_player(game_event, player):
-    return GameEventPlayer.objects.create(game_event=game_event, player=player, ball_responsible=False)
+    return GameEventPlayer.objects.create(
+        game_event=game_event,
+        player=player,
+        ball_responsible=False
+        )
