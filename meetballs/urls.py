@@ -26,4 +26,5 @@ urlpatterns = [
     path('game-events/', include("game_event.urls")),
     path('login/', app_views.loginUser, name='loginUser'),
     path('logout/', app_views.logoutUser, name='logoutUser'),
+    path('register/', app_views.registerUser, name='registerUser'),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
