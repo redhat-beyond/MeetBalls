@@ -31,7 +31,7 @@ class TestUi:
 @pytest.mark.django_db
 class Testlogin:
     def test_successful_login(self, client, player):
-        username = "daniel"
+        username = "Player"
         password = "password"
 
         login_url = reverse('loginUser')
@@ -45,7 +45,7 @@ class Testlogin:
 
     @pytest.mark.parametrize('username, password', [
         ('wronguser', 'wrongpass'),
-        ('daniel', 'wrongpass'),
+        ('Player', 'wrongpass'),
         ('wronguser', 'password'),
     ])
     def test_unsuccessful_login(self, client, username, password):

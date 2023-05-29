@@ -1,9 +1,7 @@
 from django.contrib.auth import get_user_model
 from player.models import Player, BallGame
 from game_event.models import GameEvent
-from court.models import Court
 from message.models import Message
-from decimal import Decimal
 from django.core.exceptions import ValidationError
 from django.utils import timezone
 import pytest
@@ -36,16 +34,10 @@ class TestMessageModel:
         return player
 
     @pytest.fixture
-    def saved_court(self):
-        court = Court.objects.create(x=Decimal('11'), y=Decimal('22'),
-                                     city='TEST_CITY', neighborhood='TEST_NEIGHBORHOOD', max_players=30)
-        return court
-
-    @pytest.fixture
-    def saved_game_event(self, saved_court):
+    def saved_game_event(self, court):
         return GameEvent.objects.create(id=TEST_ID, time=TEST_TIME, level_of_game=TEST_LEVEL,
                                         min_number_of_players=TEST_MIN, max_number_of_players=TEST_MAX,
-                                        court=saved_court, ball_game=TEST_BALL_GAME)
+                                        court=court, ball_game=TEST_BALL_GAME)
 
     @pytest.fixture
     def saved_message(self, saved_player, saved_game_event):
