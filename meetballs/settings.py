@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'player_rating.apps.PlayerRatingConfig',
     'game_event_player.apps.GameEventPlayerConfig',
     'court_ball_game.apps.CourtBallGameConfig',
+    'notification.apps.NotificationConfig',
 ]
 
 MIDDLEWARE = [
