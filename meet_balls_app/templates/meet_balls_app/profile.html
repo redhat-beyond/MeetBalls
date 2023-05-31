@@ -1,0 +1,105 @@
+{% extends 'base.html' %} {% block content %}
+{% if player %}
+    <div class="text-center">
+    <h2>Profile Information</h2>
+    <p>Name: {{ player.user.first_name }} {{ player.user.last_name }}</p>
+    <p>Date of Birth: {{ player.birth_date }}</p>
+    <p>Favorite Ball Game: {{ player.favorite_ball_game }}</p>
+  </div>
+<h2 class="text-center">Player Ratings</h2>
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-md-5">
+        <table class="table table-striped table-bordered">
+        <thead class="thead-dark">
+          <tr>
+            <th>Ball Game</th>
+            <th>Rating</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for rating in ratings %}
+          <tr>
+            <td>{{ rating.ball_game }}</td>
+            <td>{{ rating.rating }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div class="text-center">
+  {% if user.id|stringformat:"s" == url_id %}
+    <div>
+      <button onclick="location.href='{% url 'edit profile' %}'" class="round-button">Edit Profile</button>
+    </div>
+  {% endif %}
+</div>
+
+<h2 class="text-center">Game History</h2>
+<div>
+  <canvas id="gameHistoryChart"></canvas>
+</div>
+    {% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    var gameHistoryData = {
+      labels: [
+        {% for ball_game, count in game_history_data.items %}
+          "{{ ball_game }}",
+        {% endfor %}
+      ],
+      datasets: [{
+        data: [
+          {% for ball_game, count in game_history_data.items %}
+            {{ count }},
+          {% endfor %}
+        ],
+        backgroundColor: [
+          'rgba(255, 99, 132, 0.6)',
+          'rgba(54, 162, 235, 0.6)',
+          'rgba(255, 206, 86, 0.6)',
+          'rgba(75, 192, 192, 0.6)',
+          'rgba(153, 102, 255, 0.6)',
+          'rgba(255, 159, 64, 0.6)',
+          'rgba(255, 99, 132, 0.6)',
+          'rgba(54, 162, 235, 0.6)',
+        ],
+        borderWidth: 1
+      }]
+    };
+
+    var gameHistoryChart = new Chart(document.getElementById("gameHistoryChart"), {
+      type: 'pie',
+      data: gameHistoryData,
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: 'bottom',
+          },
+        },
+        layout: {
+          padding: {
+            left: 0,
+            right: 0,
+            top: 20,
+            bottom: 20,
+          },
+        },
+      },
+    });
+  });
+</script>
+{% endblock %}
+{% else %}
+    <div class="text-center">
+      <h2>Player Not Found</h2>
+      <p>The requested player does not exist.</p>
+    </div>
+  {% endif %}
+{% endblock %}

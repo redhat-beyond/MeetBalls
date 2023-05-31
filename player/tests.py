@@ -97,3 +97,27 @@ class TestPlayerModel:
                 birth_date='1990-01-01',
                 favorite_ball_game=None,
             )
+
+    def test_validate_and_save_valid_data(self, player):
+        birth_date = '1999-02-01'
+        favorite_ball_game = BallGame.Basketball
+
+        assert player.birth_date != birth_date
+        assert player.favorite_ball_game != favorite_ball_game
+
+        player.validate_and_save(birth_date, favorite_ball_game)
+
+        assert player.birth_date == birth_date
+        assert player.favorite_ball_game == favorite_ball_game
+
+    @pytest.mark.parametrize(
+        "birth_date, favorite_ball_game",
+        [
+            ('invalid_date', BallGame.Basketball),
+            ('1999-01-01', 'InvalidBallGame'),
+            ('invalid_date', 'InvalidBallGame'),
+        ]
+    )
+    def test_validate_and_save_invalid_inputs(self, player, birth_date, favorite_ball_game):
+        with pytest.raises(ValidationError):
+            player.validate_and_save(birth_date, favorite_ball_game)

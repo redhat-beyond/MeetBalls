@@ -56,3 +56,11 @@ body {
     flex-direction: column;
     gap: 1rem;
 }
+.round-button {
+   display: inline-block;
+   background-color: #a7898e;
+   color: #ece2db;
+   padding: 10px 20px;
+   border-radius: 20px;
+   text-decoration: none;
+}
