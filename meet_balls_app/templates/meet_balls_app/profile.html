@@ -1,6 +1,7 @@
 {% extends 'base.html' %} {% block content %}
 {% if player %}
     <div class="text-center">
+    <img src="{{ player.profile_pic.url }}" alt="Profile Picture" width="200" height="200" class="rounded-circle">
     <h2>Profile Information</h2>
     <p>Name: {{ player.user.first_name }} {{ player.user.last_name }}</p>
     <p>Date of Birth: {{ player.birth_date }}</p>
@@ -59,14 +60,15 @@
           {% endfor %}
         ],
         backgroundColor: [
-          'rgba(255, 99, 132, 0.6)',
-          'rgba(54, 162, 235, 0.6)',
-          'rgba(255, 206, 86, 0.6)',
-          'rgba(75, 192, 192, 0.6)',
-          'rgba(153, 102, 255, 0.6)',
-          'rgba(255, 159, 64, 0.6)',
-          'rgba(255, 99, 132, 0.6)',
-          'rgba(54, 162, 235, 0.6)',
+          '#EDD785',
+          '#524346',
+          '#a7898e',
+          '#9389a7',
+          '#89a7a2',
+          '#899aa7',
+          '#e3dbd8',
+          '#b9a1a5',
+          '#e5dcdd',
         ],
         borderWidth: 1
       }]

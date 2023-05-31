@@ -4,7 +4,7 @@
 <div style="width: 40%; margin: 0 auto;">
 
   <h1>Edit Player Profile</h1>
-  <form method="post">
+  <form method="post" enctype="multipart/form-data">
     {% csrf_token %}
 
     <div class="form-group">
@@ -28,6 +28,13 @@
         <input type="number" min="0" max="10" class="form-control" id="id_rating_{{ rating.id }}" name="rating[{{ rating.id }}]" value="{{ rating.rating }}" required>
       </div>
     {% endfor %}
+
+  <div class="form-group mt-2">
+      <label for="id_profile_picture">Profile Picture</label>
+        <input type="file" class="form-control-file" id="id_profile_picture" name="profile_picture">
+      <img src="{{ player.profile_pic.url }}" alt="Profile Picture" width="200" height="200" class="rounded-circle mt-3">
+  </div>
+
     <button onclick="location.href='{% url 'profile' player.user.id %}'" class="round-button mt-3">Cancel</button>
     <button type="submit" class="round-button">Save Changes</button>
   </form>

@@ -1,4 +1,4 @@
-from django.db import migrations, transaction
+from django.db import migrations, transaction, models
 from player.models import BallGame
 import datetime
 import random
@@ -27,5 +27,9 @@ class Migration(migrations.Migration):
                               favorite_ball_game=favorite_ball_game)
 
     operations = [
-            migrations.RunPython(generate_data),
+        migrations.AddField(
+            model_name='player',
+            name='profile_pic',
+            field=models.ImageField(default='default-profile-pic.png', upload_to='profile_pictures'),
+        ), migrations.RunPython(generate_data),
         ]
