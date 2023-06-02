@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>Notifications</h1>
+
+    {% for notification in notifications %}
+        <div class="notification {% if notification.is_read %}seen{% else %}unseen{% endif %}">
+            <div class="notification-header">
+                <div class="notification-title">
+                    {{ notification.notification_type }}
+                </div>
+                <div class="notification-time">
+                    {{ notification.sent_time }}
+                </div>
+            </div>
+            <button class="notification-button" onclick="toggleNotification(this)">
+                View Details
+            </button>
+            <div class="notification-details">
+                <p>{{ notification.message }}</p>
+                <p>Time Received: {{ notification.sent_time }}</p>
+            </div>
+        </div>
+    {% endfor %}
+{% endblock %}
+
+
+{% block scripts %}
+    <script>
+        function toggleNotification(button) {
+            var details = button.nextElementSibling;
+            details.classList.toggle("show");
+        }
+    </script>
+{% endblock %}
