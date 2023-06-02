@@ -3,18 +3,21 @@
 <html>
   <head>
     <link rel="stylesheet" type="text/css" href="{% static 'css/game-event.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/join-game-event.css' %}">
+
   </head>
-  <body>
+  <body class="body">
     {% if event_exists %}
-    <h1>Game Event</h1>
+    <div class="container">
+      <h1>Join Game Event</h1>
     <form method="POST" action="{% url 'process_answer_game_event' id=id %}">
     {% csrf_token %}
-      <p>Are you bringing a ball?</p>
-      <label>
+    <p class="other-text">Are you bringing a ball?</p>
+      <label class="other-text">
         <input type="radio" name="answer" value="yes" class="other-text">
         Yes
       </label>
-      <label>
+      <label class="other-text">
         <input type="radio" name="answer" value="no" class="other-text">
         No
       </label>
@@ -24,7 +27,7 @@
     </form>
       </div>
     {% else %}
-        <div>
+        <div class="container">
             <h1> Can not join, Event Does Not exist! </h1>
         </div>
     {% endif %}

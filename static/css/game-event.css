@@ -8,9 +8,10 @@
    display: inline-block;
    background-color: #a7898e;
    color: #ece2db;
-   padding: 10px 20px;
+   padding: 13px 20px;
    border-radius: 20px;
    text-decoration: none;
+   border: none;
 }
 .round-button:hover {
    color: #a7898e;
@@ -20,7 +21,7 @@
    width: 30%;
    border-collapse: collapse;
    margin-top: 10px;
-   border-radius: 10px; /* Adjust the value as per your preference */
+   border-radius: 10px;
    overflow: hidden;
 }
 
@@ -39,4 +40,44 @@
 .ball-image {
    width: 20px;
    height: 20px;
+}
+
+.button-container {
+    margin-top: 50px;
+    display: flex;
+    flex-direction: column;
+}
+
+.button-container .round-button {
+    margin-bottom: 20px;
+    width: 150px;
+    font-size: 16px;
+    display: flex;
+    justify-content: center;
+    font-weight: bold;
+    align-items: center;
+}
+
+.table-container {
+    margin-top: 30px;
+}
+
+.message-container-general.success {
+   color: #80c698;
+}
+
+.message-container-general.error {
+   color:  #fc7c7c;
+}
+
+.message-container-general {
+    margin-top: 10px;
+    padding: 15px;
+    margin-bottom: 5px;
+    font-size: 20px;
+    font-weight: bold;
+    font-family: "Haas Grot Text R Web", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    text-align: left;
+    width: fit-content;
+    line-height: 0.2;
 }

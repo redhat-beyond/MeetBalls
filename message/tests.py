@@ -109,10 +109,10 @@ class TestMessageViews:
         client.force_login(player.user)
         game_event_id = game_event.id
         url = reverse('process_answer_game_event', args=[game_event_id])
-        response = client.post(url, {'answer': 'yes'})
+        response = client.post(url, {'answer': 'yes'}, follow=True)
         assert response.status_code == 200
         url = reverse('save_text_message', args=[game_event_id])
-        client.post(url, {'mytextbox': 'hi from user'})
+        client.post(url, {'mytextbox': 'hi from user'}, follow=True)
         reverse('remove_from_event', args=[game_event_id])
         player_messages = [entry.text for entry in Message.objects.filter(game_event_id=game_event)]
         assert 'hi from user' in player_messages

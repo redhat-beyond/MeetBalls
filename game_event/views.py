@@ -95,6 +95,12 @@ def game_event(request, id):
         }
         return render(request, 'game_event/game-event.html', context)
 
+    context = add_content(event, player)
+
+    return render(request, 'game_event/game-event.html', context)
+
+
+def add_content(event, player):
     event_players = [
         {
             "first_name": entry.player.user.first_name,
@@ -118,14 +124,33 @@ def game_event(request, id):
         'event_players': event_players,
         'all_messages': all_messages
         }
-    return render(request, 'game_event/game-event.html', context)
+    return context
 
 
 def join_event(request, id):
     try:
-        GameEvent.objects.get(pk=id)
+        event = GameEvent.objects.get(pk=id)
     except GameEvent.DoesNotExist:
         return render(request, 'game_event/join-event.html', {'id': id, 'event_exists': False})
+
+    player = Player.objects.get(user=request.user)
+    if GameEventPlayer.objects.filter(game_event=event, player=player).exists():
+        messages.error(request, "Already in event!")
+        return redirect(f"/game-events/{id}", add_content(event, player))
+
+    is_event_full = event.is_event_full()
+    is_event_time_available = player.is_event_time_available(event.time)
+
+    error_messages = []
+    if is_event_full:
+        error_messages.append("The event is full! can not join")
+    if not is_event_time_available:
+        error_messages.append("You have scheduling conflicts. Resolve them before joining the event")
+
+    if error_messages:
+        for error in error_messages:
+            messages.error(request, error)
+        return redirect(f"/game-events/{id}", {})
 
     return render(request, 'game_event/join-event.html', {'id': id, 'event_exists': True})
 
@@ -134,32 +159,27 @@ def remove_from_event(request, id):
     try:
         event = GameEvent.objects.get(pk=id)
     except GameEvent.DoesNotExist:
-        return render(request, 'game_event/result.html', {'event_exists': False})
+        return redirect(f"/game-events/{id}", {})
     player = Player.objects.get(user=request.user)
     GameEventPlayer.remove_player_and_check_event_deletion(event, player)
-    return render(request, 'game_event/result.html')
+    messages.success(request, 'You are removed from the event')
+    return redirect(f"/game-events/{id}", add_content(event, player))
 
 
 def process_answer_game_event(request, id):
     try:
         event = GameEvent.objects.get(pk=id)
     except GameEvent.DoesNotExist:
-        return render(request, 'game_event/result.html', {'event_exists': False})
-
+        return redirect(f"/game-events/{id}", {})
+    content = {}
     player = Player.objects.get(user=request.user)
     ball_responsible = request.POST.get('answer') == 'yes'
-    content = {}
-    num_of_players_in_event = len(GameEventPlayer.objects.filter(game_event=event))
-    if num_of_players_in_event < event.max_number_of_players:
-        GameEventPlayer.objects.create(game_event=event, player=player, ball_responsible=ball_responsible).save()
-        in_event = GameEventPlayer.objects.filter(game_event=event, player=player).exists()
-        content["in_event"] = in_event
-        content["reached_max"] = False
-    else:
-        content["reached_max"] = True
-    content['event_exists'] = True
 
-    return render(request, 'game_event/result.html', content)
+    GameEventPlayer.objects.create(game_event=event, player=player, ball_responsible=ball_responsible).save()
+    messages.success(request, "You joined the event")
+
+    content.update(add_content(event, player))
+    return redirect(f"/game-events/{id}", content)
 
 
 def get_weather_from_api(game_events, weather_getter):
