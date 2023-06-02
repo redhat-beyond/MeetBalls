@@ -13,54 +13,180 @@ body {
 }
 
 .navbar-brand:hover {
-    color: #f5c4bc ;
+    color: #f5c4bc;
 }
 
-.wrapper-notification-container{
+.wrapper-notification-container {
     display: flex;
     justify-content: center;
-    width:100%;
+    align-items: center;
     height: 100vh;
+    background-color: #fcf3f0;
 }
+
 .notification-container {
-    width:700px;
+    max-width: 700px;
     margin: 2rem;
-    padding: 1rem 1rem;
-    border-radios: 1rem;
+    padding: 1rem;
+    border-radius: 1rem;
+    background-color: #fff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    position: relative; /* Added for positioning the dot */
 }
+
 .notification-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
     margin-bottom: 2rem;
 }
-.num-of-notifications{
+
+.notification-title {
+    flex-grow: 1;
+}
+
+.notification-time {
+    color: gray;
+}
+
+.num-of-notifications {
     background-color: blue;
     display: flex;
-    font-weight: 700;
-    width:30px;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+    width: 30px;
     height: 30px;
-    border-radios: 0.5rem;
+    border-radius: 50%;
     margin-left: 10px;
+    color: #fff;
 }
+
+.new-notification-text {
+    font-size: 12px;
+    color: blue;
+    font-weight: bold;
+    margin-right: 5px;
+}
+
 #mark-as-read {
     color: gray;
     cursor: pointer;
-    transition: 0.6sec ease;
+    transition: 0.3s ease;
 }
+
 #mark-as-read:hover {
     color: black;
 }
+
 .notification-main {
     display: flex;
     flex-direction: column;
     gap: 1rem;
 }
+
 .round-button {
-   display: inline-block;
-   background-color: #a7898e;
-   color: #ece2db;
-   padding: 10px 20px;
-   border-radius: 20px;
-   text-decoration: none;
+    display: inline-block;
+    background-color: #a7898e;
+    color: #ece2db;
+    padding: 10px 20px;
+    border-radius: 20px;
+    text-decoration: none;
 }
+
+.notification {
+    position: relative;
+    border-radius: 10px;
+    padding: 10px;
+    margin-bottom: 10px;
+    transition: background-color 0.3s ease;
+}
+
+.notification.seen {
+    background-color: #fcf3f0;
+    border: 1px solid #fcf3f0;
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
+}
+
+.notification.unseen {
+    background-color: #F3BCC8;
+    border: 1px solid #F3BCC8;
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
+}
+
+.notification.unseen::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    right: 5px;
+    transform: translateY(-50%);
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background-color: blue;
+}
+
+.notification.unseen::before {
+    content: "**NEW**";
+    display: inline-block;
+    font-size: 16px;
+    color: blue;
+    font-weight: bold;
+    margin-right: 5px;
+}
+
+
+.notification-button {
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+}
+
+.notification-details {
+    display: none;
+}
+
+.notification-details.show {
+    display: block;
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid #ccc;
+}
+
+.notification-bell-icon-button {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 50px;
+    height: 50px;
+    color: #AB8E90;
+    background: #fcf3f0;
+    border: none;
+    outline: none;
+    border-radius: 50%;
+    margin-top: -10px;
+  }
+  
+  .notification-bell-icon-button:hover {
+    cursor: pointer;
+    background: #fce7e1;
+  }
+  
+  .notification-bell-icon-button:active {
+    background: #fce7e1;
+  }
+  
+  .notification-bell-icon-button__badge {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    width: 22px;
+    height: 22px;
+    background: red;
+    color: #ffffff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50%;
+  }

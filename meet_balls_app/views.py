@@ -7,12 +7,23 @@ from player.models import BallGame, Player
 from django.contrib.auth.models import User
 from player_rating.models import PlayerRating
 from game_event_player.models import GameEventPlayer
+from notification.models import Notification
 from django.db.models import Count
 from django.contrib.auth.decorators import login_required
 
 
 def home(request):
     return render(request, 'meet_balls_app/home.html')
+
+
+def notifications(request):
+    notifications = Notification.objects.filter(player=request.user.player)
+
+    context = {
+        'notifications': notifications
+    }
+
+    return render(request, 'meet_balls_app/notifications.html', context)
 
 
 def loginUser(request):

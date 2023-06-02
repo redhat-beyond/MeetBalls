@@ -22,7 +22,3 @@ class Notification(models.Model):
 
     def __str__(self):
         return f"{self.notification_type} - {self.message}"
-
-    def mark_notification_as_read(self):
-        self.is_read = True
-        self.save()

@@ -34,6 +34,17 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
           <ul class="navbar-nav ms-auto">
+            {% if user.is_authenticated %}
+            <li class="nav-item">
+                <a class="nav-link" href="/notifications">
+                  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+                  <button type="button" class="notification-bell-icon-button">
+                    <span class="material-icons">notifications</span>
+                    <span class="notification-bell-icon-button__badge">2</span>  <!-- This should be a counter variable -->
+                  </button>
+                </a>
+            </li>
+            {% endif %}
             <li class="nav-item">
               <a class="nav-link" href="/game-events">Games</a>
             </li>
