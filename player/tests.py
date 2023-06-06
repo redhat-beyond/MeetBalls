@@ -3,6 +3,10 @@ from django.core.exceptions import ValidationError
 from django.contrib.auth.models import User
 from django.db import IntegrityError
 import pytest
+from django.core.files.uploadedfile import SimpleUploadedFile
+import os
+from django.conf import settings
+from player.models import user_directory_path
 
 
 @pytest.mark.django_db
@@ -105,19 +109,56 @@ class TestPlayerModel:
         assert player.birth_date != birth_date
         assert player.favorite_ball_game != favorite_ball_game
 
-        player.validate_and_save(birth_date, favorite_ball_game)
+        profile_pic = SimpleUploadedFile("sample.jpg", b"dummy_image_data", content_type="image/jpeg")
+        player.validate_and_save(birth_date, favorite_ball_game, profile_pic)
 
         assert player.birth_date == birth_date
         assert player.favorite_ball_game == favorite_ball_game
+        expected_file_path = os.path.join(settings.MEDIA_ROOT, player.profile_pic.name)
+        assert os.path.exists(expected_file_path)
 
     @pytest.mark.parametrize(
-        "birth_date, favorite_ball_game",
+        "birth_date, favorite_ball_game, profile_pic, expected_errors",
         [
-            ('invalid_date', BallGame.Basketball),
-            ('1999-01-01', 'InvalidBallGame'),
-            ('invalid_date', 'InvalidBallGame'),
+            ('1990-05-05', "InvalidBallGame",
+             SimpleUploadedFile("test_image.jpg", b"dummy_image_data", content_type="image/jpeg"),
+             ["Invalid favorite ball game",]),
+            ('invalid_date', BallGame.Soccer,
+             SimpleUploadedFile("test_image.jpg", b"dummy_image_data", content_type="image/jpeg"),
+             ["Invalid birth date format",]),
+            ('invalid_date', "InvalidBallGame",
+             SimpleUploadedFile("test_image.jpg", b"dummy_image_data", content_type="image/jpeg"),
+             ["Invalid favorite ball game", "Invalid birth date format"]),
+            ('invalid_date', BallGame.Basketball, None,
+             ["Invalid birth date format",]),
+            ('1999-01-01', 'InvalidBallGame', None,
+             ["Invalid favorite ball game",]),
+            ('invalid_date', 'InvalidBallGame', None,
+             ["Invalid favorite ball game", "Invalid birth date format"]),
+            ('2000-01-01', BallGame.Basketball,
+             SimpleUploadedFile("test_image.txt", b"dummy_file_data", content_type="image/jpeg"),
+             ["Invalid picture format",]),
+            ('2000-01-01', "InvalidBallGame",
+             SimpleUploadedFile("test_image.txt", b"dummy_image_data", content_type="image/jpeg"),
+             ["Invalid favorite ball game", "Invalid picture format",]),
+            ("invalid_date", BallGame.Basketball,
+             SimpleUploadedFile("test_image.txt", b"dummy_image_data", content_type="image/jpeg"),
+             ["Invalid birth date format", "Invalid picture format",]),
         ]
     )
-    def test_validate_and_save_invalid_inputs(self, player, birth_date, favorite_ball_game):
-        with pytest.raises(ValidationError):
-            player.validate_and_save(birth_date, favorite_ball_game)
+    def test_validate_and_save_invalid_inputs(self, player, birth_date, favorite_ball_game, profile_pic,
+                                              expected_errors):
+        with pytest.raises(ValidationError) as e:
+            player.validate_and_save(birth_date, favorite_ball_game, profile_pic)
+
+            for error in expected_errors:
+                assert error in str(e.value)
+
+
+@pytest.mark.django_db
+class TestUserDirectoryPath:
+    def test_user_directory_path(self, player):
+        filename = 'example.jpg'
+        result = user_directory_path(player, filename)
+        expected_output = f'user_{player.user.id}/example.jpg'
+        assert result == expected_output

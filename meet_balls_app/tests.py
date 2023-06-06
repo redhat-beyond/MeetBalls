@@ -4,6 +4,7 @@ import pytest
 from django.urls import reverse
 from django.utils import timezone
 from player.models import BallGame
+from django.core.files.uploadedfile import SimpleUploadedFile
 
 
 class TestUi:
@@ -211,6 +212,7 @@ class TestProfile:
         assert '<td>' + str(player_rating.rating) + '</td>' in response.content.decode()
         assert '<td>' + str(game_event.ball_game) + '</td>' in response.content.decode()
         assert b'<button onclick' in response.content
+        assert 'src="{}"'.format(player.profile_pic.url) in response.content.decode()
 
     def test_profile_view_edit_button_not_displayed(self, client, player):
         not_player_user_id = 5
@@ -261,13 +263,18 @@ class TestProfile:
         url = reverse('edit profile')
         client.force_login(player.user)
 
-        data = {
-            'birth_date': '2000-02-02',
-            'favorite_ball_game': 'Tennis',
-        }
         expected_birth_date = datetime.datetime.strptime('2000-02-02', '%Y-%m-%d').date()
         assert player.birth_date != expected_birth_date
         assert player.favorite_ball_game != BallGame.Tennis
+        assert player.profile_pic != "sample.jpg"
+
+        file = SimpleUploadedFile('sample.jpg', b"file_data", content_type='image/jpeg')
+
+        data = {
+            'birth_date': '2000-02-02',
+            'favorite_ball_game': 'Tennis',
+            "profile_picture": file,
+        }
 
         response = client.post(url, data)
         assert response.status_code == 302
@@ -277,3 +284,4 @@ class TestProfile:
 
         assert player.birth_date == expected_birth_date
         assert player.favorite_ball_game == BallGame.Tennis
+        assert player.profile_pic.name.endswith(".jpg")

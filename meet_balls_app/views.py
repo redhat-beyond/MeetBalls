@@ -127,8 +127,9 @@ def edit_profile(request):
     if request.method == 'POST':
         birth_date = request.POST.get('birth_date')
         favorite_ball_game = request.POST.get('favorite_ball_game')
+        profile_picture = request.FILES.get('profile_picture')
         try:
-            player.validate_and_save(birth_date, favorite_ball_game)
+            player.validate_and_save(birth_date, favorite_ball_game, profile_picture)
             for rating in ratings:
                 rating_value = request.POST.get(f"rating[{rating.id}]")
                 rating.rating = int(rating_value)
