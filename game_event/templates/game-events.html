@@ -36,6 +36,9 @@
 				<th>Minimum Players</th>
 				<th>Maximum Players</th>
 				<th>Court ID</th>
+                <th>City</th>
+                <th>Curr Temp</th>
+                <th>Curr Weather</th>
 				<th>Ballgame</th>
 			</tr>
 		</thead>
@@ -44,12 +47,20 @@
 		<tbody>
 			{% for event in game_events %}
 			<tr>
-				<td><a href="http://127.0.0.1:8000/game-events/{{ event.id }}/">{{ event.id }}</a></td>
+				<td><a href="/game-events/{{ event.id }}/">{{ event.id }}</a></td>
 				<td>{{ event.time }}</td>
 				<td>{{ event.level_of_game }}</td>
 				<td>{{ event.min_number_of_players }}</td>
 				<td>{{ event.max_number_of_players }}</td>
-				<td><a href="http://127.0.0.1:8000/courts/{{ event.court.courtID }}">{{ event.court.courtID }}</a></td>
+				<td><a href="/courts/{{ event.court.courtID }}">{{ event.court.courtID }}</a></td>
+                <td>{{ event.court.city }}</td>
+                {% if event.weather %}
+                    <td>  {{ event.weather.temp}} </td>
+                    <td>  <img src={{ event.weather.icon }}> </td>
+                {% else %}
+                    <td> N/A </td>
+                    <td> N/A </td>
+                {% endif %}
 				<td>{{ event.ball_game }}</td>
 			</tr>
 			{% endfor %}
