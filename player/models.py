@@ -2,6 +2,7 @@ from django.contrib.auth.models import User
 from django.db import models
 import datetime
 from django.core.exceptions import ValidationError
+from django.utils import timezone
 
 
 class BallGame(models.TextChoices):
@@ -65,3 +66,13 @@ class Player(models.Model):
 
         else:
             self.save()
+
+    def is_event_time_available(self, desired_event_time):
+        from game_event_player.models import GameEventPlayer
+        TIME_LIMIT = 4
+        start_time_limit = desired_event_time - timezone.timedelta(hours=TIME_LIMIT)
+        end_time_limit = desired_event_time + timezone.timedelta(hours=TIME_LIMIT)
+        conflicting_events = GameEventPlayer.objects.filter(player=self,
+                                                            game_event__time__range=(start_time_limit,
+                                                                                     end_time_limit))
+        return not conflicting_events.exists()

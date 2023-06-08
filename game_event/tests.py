@@ -8,10 +8,8 @@ from django.urls import reverse
 from .views import process_game_event_form, get_weather_from_api
 from datetime import timedelta
 import pytest
-from django.db import IntegrityError
 from unittest import mock
 import urllib
-
 
 TEST_ID = 2
 TEST_TIME = timezone.now()
@@ -232,7 +230,7 @@ class TestGameEventViews:
     def test_success_loading_site_join_game_event(self, client, game_event, player):
         client.force_login(player.user)
         url = reverse('join_event', args=[game_event.id])
-        response = client.get(url)
+        response = client.get(url, follow=True)
         assert response.status_code == 200
 
     def test_fail_loading_site_join_game_event(self, client, player):
@@ -244,30 +242,30 @@ class TestGameEventViews:
     def test_success_loading_site_remove_game_event(self, client, game_event, game_event_player):
         client.force_login(game_event_player.player.user)
         url = reverse('remove_from_event', args=[game_event.id])
-        response = client.get(url)
+        response = client.get(url, follow=True)
         assert response.status_code == 200
 
     def test_fail_loading_site_remove_game_event_from_player(self, client, player):
         client.force_login(player.user)
-        response = client.get('/game-events/remove-from-event/-1/')
+        response = client.get('/game-events/remove-from-event/-1/', follow=True)
         assert response.status_code == 200
-        assert b"Can not remove from event, Event Does not Exist! " in response.content
+        assert b"Event Does not exist." in response.content
 
     def test_fail_loading_remove_from_event_after_deleting_the_game_event(self, client, game_event,
                                                                           game_event_player):
         client.force_login(game_event_player.player.user)
         url = reverse('remove_from_event', args=[game_event.id])
-        response = client.get(url)
+        response = client.get(url, follow=True)
         assert response.status_code == 200
         game_event.delete()
-        response = client.get(url)
+        response = client.get(url, follow=True)
         assert response.status_code == 200
-        assert b"Can not remove from event, Event Does not Exist! " in response.content
+        assert b"Event Does not exist." in response.content
 
     def test_remove_player_from_event(self, client, game_event, game_event_player):
         client.force_login(game_event_player.player.user)
         url = reverse('remove_from_event', args=[game_event.id])
-        response = client.get(url)
+        response = client.get(url, follow=True)
         assert response.status_code == 200
         with pytest.raises(ObjectDoesNotExist):
             GameEventPlayer.objects.get(game_event=game_event, player=game_event_player.player)
@@ -281,7 +279,7 @@ class TestGameEventViews:
     def test_add_player_to_event(self, client, game_event, player):
         client.force_login(player.user)
         url = reverse('process_answer_game_event', args=[game_event.id])
-        response = client.post(url, {'answer': 'yes'})
+        response = client.post(url, {'answer': 'yes'},  follow=True)
         assert response.status_code == 200
         assert response.context['in_event']
         assert GameEventPlayer.objects.filter(game_event=game_event, player=player).exists()
@@ -289,16 +287,35 @@ class TestGameEventViews:
     def test_fail_add_player_to_event_already_in_it(self, client, game_event, player):
         client.force_login(player.user)
         url = reverse('process_answer_game_event', args=[game_event.id])
-        response = client.post(url, {'answer': 'yes'})
+        response = client.post(url, {'answer': 'yes'}, follow=True)
         assert response.status_code == 200
-        with pytest.raises(IntegrityError):
-            response = client.post(url, {'answer': 'yes'})
+        url = reverse('join_event', args=[game_event.id])
+        response = client.get(url, follow=True)
+        assert response.status_code == 200
+        assert b"Already in event!" in response.content
+
+    def test_player_can_not_join_full_event(self, client, five_game_event_players, player, game_event):
+        client.force_login(player.user)
+        url = reverse('join_event', args=[game_event.id])
+        response = client.get(url, follow=True)
+        assert response.status_code == 200
+        assert b"The event is full! can not join" in response.content
+
+    def test_event_time_constraint(self, client, game_event, game_event_player, court, court_ball_game):
+        client.force_login(game_event_player.player.user)
+        event = GameEvent.create(time=game_event.time + timedelta(hours=2), level_of_game=0,
+                                 min_number_of_players=2, max_number_of_players=5, court=court,
+                                 ball_game=BallGame.Basketball)
+        url = reverse('join_event', args=[event.id])
+        response = client.get(url, follow=True)
+        assert response.status_code == 200
+        assert b"You have scheduling conflicts. Resolve them before joining the event" in response.content
 
     def test_event_deletion_on_last_player_leave(self, client, game_event, game_event_player):
         count_game_events_before = GameEvent.objects.count()
         client.force_login(game_event_player.player.user)
         url = reverse('remove_from_event', args=[game_event.id])
-        response = client.get(url)
+        response = client.get(url, follow=True)
         assert response.status_code == 200
         assert count_game_events_before - 1 == GameEvent.objects.count()
         with pytest.raises(ObjectDoesNotExist):

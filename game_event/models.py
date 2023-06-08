@@ -51,3 +51,9 @@ class GameEvent(models.Model):
     @staticmethod
     def is_ball_game_playable_at_court(court, ball_game):
         return CourtBallGame.is_ball_game_playable(court, ball_game)
+
+    def is_event_full(self):
+        from game_event_player.models import GameEventPlayer
+
+        current_players = GameEventPlayer.objects.filter(game_event=self).count()
+        return current_players == self.max_number_of_players
