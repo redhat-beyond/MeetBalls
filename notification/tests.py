@@ -1,5 +1,5 @@
 import pytest
-from notification.models import Notification
+from notification.models import Notification, NotificationType
 
 
 @pytest.mark.django_db
@@ -15,7 +15,29 @@ class TestNotification:
         with pytest.raises(Notification.DoesNotExist):
             Notification.objects.get(pk=notification.pk)
 
-    def test_mark_as_read_notification(self, notification):
+    def test_update_notification_message(self, notification):
+        old_id = notification.id
+        assert notification.message == 'Test notification'
+        notification.message = 'ABCDE'
+        notification.save()
+        updated_notification = Notification.objects.get(pk=old_id)
+        assert updated_notification.message == 'ABCDE'
+        assert old_id == notification.id == updated_notification.id
+
+    def test_update_notification_type(self, notification):
+        old_id = notification.id
+        assert notification.notification_type == NotificationType.WEBSITE
+        notification.notification_type = NotificationType.CHAT
+        notification.save()
+        updated_notification = Notification.objects.get(pk=old_id)
+        assert updated_notification.notification_type == NotificationType.CHAT
+        assert old_id == notification.id == updated_notification.id
+
+    def test_update_notification_is_read(self, notification):
+        old_id = notification.id
         assert notification.is_read is False
-        notification.mark_notification_as_read()
-        assert notification.is_read is True
+        notification.is_read = True
+        notification.save()
+        updated_notification = Notification.objects.get(pk=old_id)
+        assert updated_notification.is_read is True
+        assert old_id == notification.id == updated_notification.id

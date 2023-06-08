@@ -30,6 +30,7 @@ urlpatterns = (
         path("register/", app_views.registerUser, name="registerUser"),
         path("profile/<id>/", app_views.profile, name="profile"),
         path("edit-profile/", app_views.edit_profile, name="edit profile"),
+        path('notifications/', app_views.notifications, name='notifications'),
     ]
     + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
     + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
