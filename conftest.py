@@ -7,6 +7,7 @@ from decimal import Decimal
 from player_rating.models import PlayerRating
 from game_event.models import GameEvent
 from game_event_player.models import GameEventPlayer
+from message.models import Message
 import pytest
 
 
@@ -69,3 +70,14 @@ def game_event_player(game_event, player):
         player=player,
         ball_responsible=False
         )
+
+
+@pytest.fixture
+def message(player, game_event):
+    message = Message.objects.create(
+        user_id=player,
+        game_event_id=game_event,
+        time_sent=timezone.now(),
+        text="test message"
+    )
+    return message
