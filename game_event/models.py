@@ -10,7 +10,6 @@ import datetime
 
 
 class GameEvent(models.Model):
-    id = models.IntegerField(primary_key=True)
     time = models.DateTimeField(null=False)
     level_of_game = models.IntegerField(choices=Rating.choices, blank=True)
     min_number_of_players = models.PositiveIntegerField()
@@ -31,6 +30,7 @@ class GameEvent(models.Model):
                                max_number_of_players=max_number_of_players,
                                court=court,
                                ball_game=ball_game)
+
         game_event.save()
         return game_event
 

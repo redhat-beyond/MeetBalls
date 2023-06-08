@@ -89,7 +89,8 @@ class TestGameEventModel:
                                      min_number_of_players=TEST_MIN, max_number_of_players=TEST_MAX,
                                      court=court,).full_clean()
 
-    def test_create_game_event_valid_form(self, client, court, court_ball_game):
+    def test_create_game_event_valid_form(self, client, court, court_ball_game, player):
+        client.force_login(player.user)
         count_of_game_events_before = GameEvent.objects.count()
         url = reverse(process_game_event_form)
         time_now_plus_one_day = (timezone.now() + timedelta(days=1)).strftime('%Y-%m-%dT%H:%M')
@@ -103,6 +104,24 @@ class TestGameEventModel:
         }
         client.post(url, data=form_data)
         assert GameEvent.objects.count() == count_of_game_events_before + 1
+
+    def test_player_added_after_creation_of_game_event(self, client, court, court_ball_game, player):
+        client.force_login(player.user)
+        count_events_of_player_before = GameEventPlayer.objects.filter(player=player).count()
+        url = reverse(process_game_event_form)
+        time_now_plus_one_day = (timezone.now() + timedelta(days=1)).strftime('%Y-%m-%dT%H:%M')
+        form_data = {
+            'time': time_now_plus_one_day,
+            'level_of_game': 5,
+            'min_number_of_players': 2,
+            'max_number_of_players': 4,
+            'court': court.courtID,
+            'ball_game': TEST_BALL_GAME,
+        }
+        client.post(url, data=form_data)
+        assert GameEventPlayer.objects.filter(player=player).count() == count_events_of_player_before + 1
+        event = GameEvent.objects.latest('id')
+        assert GameEventPlayer.objects.filter(game_event=event).count() == 1
 
     def test_validate_game_event_creation_bad_time(self, court, court_ball_game):
         bad_test_time = timezone.datetime.fromisoformat("2022-05-10T14:30")
@@ -170,7 +189,8 @@ class TestGameEventModel:
             court, ball_game)
         assert GameEvent.objects.count() == count_of_game_events + 1
 
-    def test_post_game_event(self, client, court, court_ball_game):
+    def test_post_game_event(self, client, court, court_ball_game, player):
+        client.force_login(player.user)
         count_of_game_events = GameEvent.objects.count()
         time_now_plus_one_day = (timezone.now() + timedelta(days=1)).strftime('%Y-%m-%dT%H:%M')
         response = client.post('/game-events/create/process', {
@@ -185,14 +205,21 @@ class TestGameEventModel:
         assert response.status_code == 302
         assert response.url == '/game-events/'
 
+    def test_model_method_game_event_deleted(self, game_event, game_event_player):
+        assert GameEventPlayer.remove_player_and_check_event_deletion(game_event, game_event_player.player)
+        assert not GameEventPlayer.objects.filter(game_event_id=game_event.pk).exists()
+
+    def test_model_method_game_event_not_deleted(self, game_event, five_game_event_players):
+        assert not GameEventPlayer.remove_player_and_check_event_deletion(game_event, five_game_event_players[0].player)
+        assert GameEventPlayer.objects.filter(game_event=game_event).exists()
+
 
 @pytest.mark.django_db
 class TestGameEventViews:
 
     def test_success_loading_site_game_event(self, client, game_event, player):
         client.force_login(player.user)
-        game_event_id = game_event.id
-        url = reverse('game_event', args=[game_event_id])
+        url = reverse('game_event', args=[game_event.id])
         response = client.get(url)
         assert response.status_code == 200
 
@@ -204,8 +231,7 @@ class TestGameEventViews:
 
     def test_success_loading_site_join_game_event(self, client, game_event, player):
         client.force_login(player.user)
-        game_event_id = game_event.id
-        url = reverse('join_event', args=[game_event_id])
+        url = reverse('join_event', args=[game_event.id])
         response = client.get(url)
         assert response.status_code == 200
 
@@ -217,8 +243,7 @@ class TestGameEventViews:
 
     def test_success_loading_site_remove_game_event(self, client, game_event, game_event_player):
         client.force_login(game_event_player.player.user)
-        game_event_id = game_event.id
-        url = reverse('remove_from_event', args=[game_event_id])
+        url = reverse('remove_from_event', args=[game_event.id])
         response = client.get(url)
         assert response.status_code == 200
 
@@ -231,8 +256,7 @@ class TestGameEventViews:
     def test_fail_loading_remove_from_event_after_deleting_the_game_event(self, client, game_event,
                                                                           game_event_player):
         client.force_login(game_event_player.player.user)
-        game_event_id = game_event.id
-        url = reverse('remove_from_event', args=[game_event_id])
+        url = reverse('remove_from_event', args=[game_event.id])
         response = client.get(url)
         assert response.status_code == 200
         game_event.delete()
@@ -242,8 +266,7 @@ class TestGameEventViews:
 
     def test_remove_player_from_event(self, client, game_event, game_event_player):
         client.force_login(game_event_player.player.user)
-        game_event_id = game_event.id
-        url = reverse('remove_from_event', args=[game_event_id])
+        url = reverse('remove_from_event', args=[game_event.id])
         response = client.get(url)
         assert response.status_code == 200
         with pytest.raises(ObjectDoesNotExist):
@@ -251,15 +274,13 @@ class TestGameEventViews:
 
     def test_remove_player_that_is_not_in_event(self, client, game_event, player):
         client.force_login(player.user)
-        game_event_id = game_event.id
-        url = reverse('remove_from_event', args=[game_event_id])
+        url = reverse('remove_from_event', args=[game_event.id])
         with pytest.raises(ObjectDoesNotExist):
             client.get(url)
 
     def test_add_player_to_event(self, client, game_event, player):
         client.force_login(player.user)
-        game_event_id = game_event.id
-        url = reverse('process_answer_game_event', args=[game_event_id])
+        url = reverse('process_answer_game_event', args=[game_event.id])
         response = client.post(url, {'answer': 'yes'})
         assert response.status_code == 200
         assert response.context['in_event']
@@ -267,12 +288,21 @@ class TestGameEventViews:
 
     def test_fail_add_player_to_event_already_in_it(self, client, game_event, player):
         client.force_login(player.user)
-        game_event_id = game_event.id
-        url = reverse('process_answer_game_event', args=[game_event_id])
+        url = reverse('process_answer_game_event', args=[game_event.id])
         response = client.post(url, {'answer': 'yes'})
         assert response.status_code == 200
         with pytest.raises(IntegrityError):
             response = client.post(url, {'answer': 'yes'})
+
+    def test_event_deletion_on_last_player_leave(self, client, game_event, game_event_player):
+        count_game_events_before = GameEvent.objects.count()
+        client.force_login(game_event_player.player.user)
+        url = reverse('remove_from_event', args=[game_event.id])
+        response = client.get(url)
+        assert response.status_code == 200
+        assert count_game_events_before - 1 == GameEvent.objects.count()
+        with pytest.raises(ObjectDoesNotExist):
+            GameEvent.objects.get(pk=game_event.id)
 
 
 @pytest.mark.django_db
